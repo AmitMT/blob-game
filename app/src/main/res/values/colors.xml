@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#313131</color>
+    <color name="player">#FFFFFF00</color>
+    <color name="enemy">#88FFFFFF</color>
+    <color name="FPS_meter">#FF09FF</color>
+</resources>
