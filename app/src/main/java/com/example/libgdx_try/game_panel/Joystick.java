@@ -1,45 +1,39 @@
-package com.example.libgdx_try;
+package com.example.libgdx_try.game_panel;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import java.util.Random;
-
 public class Joystick {
-    Point outerCircleCenter;
+
+    Point outerCircleCenter = new Point(0, 0);
     float outerCircleRadius;
-    Point innerCircleCenter;
+    Point innerCircleCenter = new Point(0, 0);
     float innerCircleRadius;
     Paint outerCirclePaintFill;
     Paint outerCirclePaintStroke;
     Paint innerCirclePaint;
-    double centerToTouchDistanceSqr;
     PointF actuator = new PointF(0, 0);
-    boolean visible = true;
+    boolean visible = false;
 
-    public Joystick(Point center, float outerCircleRadius, float innerCircleRadius) {
-        outerCircleCenter = new Point(center.x, center.y);
-        innerCircleCenter = new Point(center.x, center.y);
+    public Joystick(float outerCircleRadius, float innerCircleRadius) {
         this.outerCircleRadius = outerCircleRadius;
         this.innerCircleRadius = innerCircleRadius;
 
         outerCirclePaintFill = new Paint();
-        outerCirclePaintFill.setColor(Color.parseColor("#88888888"));
+        outerCirclePaintFill.setColor(Color.parseColor("#66666666"));
         outerCirclePaintFill.setStyle(Paint.Style.FILL);
 
         outerCirclePaintStroke = new Paint();
-        outerCirclePaintStroke.setColor(Color.parseColor("#88aaaaaa"));
+        outerCirclePaintStroke.setColor(Color.parseColor("#88888888"));
         outerCirclePaintStroke.setStyle(Paint.Style.STROKE);
         outerCirclePaintStroke.setStrokeWidth(8);
 
         innerCirclePaint = new Paint();
         innerCirclePaint.setColor(Color.parseColor("#88000000"));
-        innerCirclePaint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
     public void draw(Canvas canvas) {
@@ -77,8 +71,8 @@ public class Joystick {
     }
 
     public void setCenter(Point center) {
-        outerCircleCenter = center;
-        innerCircleCenter = center;
+        outerCircleCenter = new Point(center.x, center.y);
+        innerCircleCenter = new Point(center.x, center.y);
     }
 
     public boolean isVisible() {
@@ -92,14 +86,13 @@ public class Joystick {
     public boolean useTouch(MotionEvent event) {
         // Return true if used the touch event
         switch (event.getAction()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_DOWN:
                 setCenter(new Point((int) event.getX(), (int) event.getY()));
                 setActuator(new PointF(event.getX(), event.getY()));
                 setVisible(true);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 setActuator(new PointF(event.getX(), event.getY()));
-                setVisible(true);
                 return true;
             case MotionEvent.ACTION_UP:
                 resetActuator();

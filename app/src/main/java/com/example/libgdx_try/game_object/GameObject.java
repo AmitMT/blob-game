@@ -1,4 +1,4 @@
-package com.example.libgdx_try;
+package com.example.libgdx_try.game_object;
 
 import android.graphics.Canvas;
 import android.graphics.PointF;

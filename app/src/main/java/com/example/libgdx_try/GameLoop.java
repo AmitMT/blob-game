@@ -8,7 +8,7 @@ public class GameLoop extends Thread {
     public static final float MAX_UPS = 60;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
     boolean isRunning;
-    SurfaceHolder surfaceHolder;
+    final SurfaceHolder surfaceHolder;
     Game game;
     double avgUPS;
     double avgFPS;
@@ -101,7 +101,6 @@ public class GameLoop extends Thread {
     }
 
     public void stopLoop() {
-        Log.d("GameLoop.java", "stopLoop()");
         isRunning = false;
         try {
             join();

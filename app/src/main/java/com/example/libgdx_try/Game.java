@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,16 +15,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MotionEventCompat;
+
+import com.example.libgdx_try.game_object.Blob;
+import com.example.libgdx_try.game_object.Tank;
+import com.example.libgdx_try.game_panel.Joystick;
+import com.example.libgdx_try.graphics.CoronaSpriteSheet;
 
 import java.util.Random;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
+
     GameLoop gameLoop;
-    Blob player;
+    Tank player;
     Blob[] blobs = new Blob[100];
     Joystick joystick;
     Paint UPSPaint;
+    float scaleFactor = 4;
 
     public Game(Context context) {
         this(context, null);
@@ -38,8 +43,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
+        CoronaSpriteSheet coronaSpriteSheet = new CoronaSpriteSheet(context);
 
-        player = new Blob(new PointF(0, 0), 30, ContextCompat.getColor(context, R.color.player));
+        player = new Tank(
+                new PointF(0, 0),
+                30,
+                ContextCompat.getColor(context, R.color.player),
+                coronaSpriteSheet.getSpriteByIndex(0, 0),
+                new Point(50, 20)
+        );
 
         SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
@@ -49,14 +61,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         UPSPaint = new Paint();
         UPSPaint.setColor(ContextCompat.getColor(context, R.color.FPS_meter));
         UPSPaint.setTextSize(30);
-
         Random random = new Random();
         for (int i = 0; i < blobs.length; i++) {
             blobs[i] = new Blob(new PointF(
                     random.nextInt(1000) - 500,
                     random.nextInt(2000) - 1000),
                     random.nextInt(100),
-                    ContextCompat.getColor(context, R.color.enemy)
+                    ContextCompat.getColor(context, R.color.enemy),
+                    coronaSpriteSheet.getSpriteByIndex(0, 3)
             );
         }
 
@@ -68,9 +80,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
 
         canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
-
         canvas.translate(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y);
+        canvas.scale(scaleFactor, scaleFactor, player.getPosition().x, player.getPosition().y);
         drawRelationalToPlayer(canvas);
+        canvas.scale(1 / scaleFactor, 1 / scaleFactor, player.getPosition().x, player.getPosition().y);
         canvas.translate(player.getPosition().x - getWidth() / 2f, player.getPosition().y - getHeight() / 2f);
 
         joystick.draw(canvas);
@@ -96,56 +109,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
-//        if (joystick.useTouch(event)) return true;
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-                joystick.setCenter(new Point((int) event.getX(), (int) event.getY()));
-                joystick.setActuator(new PointF(event.getX(), event.getY()));
-                joystick.setVisible(true);
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                joystick.setActuator(new PointF(event.getX(), event.getY()));
-                joystick.setVisible(true);
-                return true;
-            case MotionEvent.ACTION_UP:
-                joystick.resetActuator();
-                joystick.setVisible(false);
-                return true;
-        }
-
-        int action = event.getAction();
-        // Get the index of the pointer associated with the action.
-//        int index = event.getActionIndex();
-        int xPos = -1;
-        int yPos = -1;
-
-        Log.d("hii", "The action is " + event.getActionIndex() + actionToString(action) + action + " " + new Random().nextInt());
+        if (joystick.useTouch(event)) return true;
 
         return super.onTouchEvent(event);
     }
-
-    public static String actionToString(int action) {
-        switch (action) {
-
-            case MotionEvent.ACTION_DOWN:
-                return "Down";
-            case MotionEvent.ACTION_MOVE:
-                return "Move";
-            case MotionEvent.ACTION_POINTER_DOWN:
-                return "Pointer Down";
-            case MotionEvent.ACTION_UP:
-                return "Up";
-            case MotionEvent.ACTION_POINTER_UP:
-                return "Pointer Up";
-            case MotionEvent.ACTION_OUTSIDE:
-                return "Outside";
-            case MotionEvent.ACTION_CANCEL:
-                return "Cancel";
-        }
-        return "";
-    }
-
 
     public void drawUPS(Canvas canvas) {
         String avgUPS = Double.toString(gameLoop.getAvgUPS());
@@ -161,7 +128,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        joystick = new com.example.libgdx_try.Joystick(new Point(150, getHeight() - 150), 100, 50);
+        joystick = new Joystick(100, 50);
+        if (gameLoop.getState().equals(Thread.State.TERMINATED)) {
+            gameLoop = new GameLoop(this, holder);
+        }
         gameLoop.startLoop();
     }
 
@@ -173,5 +143,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
 
+    }
+
+    public void pause() {
+        gameLoop.stopLoop();
     }
 }
