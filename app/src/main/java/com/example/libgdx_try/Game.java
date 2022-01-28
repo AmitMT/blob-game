@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -28,7 +29,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     GameLoop gameLoop;
     Tank player;
     Blob[] blobs = new Blob[100];
-    Joystick joystick;
+    Joystick movingJoystick;
+    Joystick lookingJoystick;
     Paint UPSPaint;
     float scaleFactor = 4;
 
@@ -50,7 +52,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 30,
                 ContextCompat.getColor(context, R.color.player),
                 coronaSpriteSheet.getSpriteByIndex(0, 0),
-                new Point(50, 20)
+                new Point(50, 20),
+                100
         );
 
         SurfaceHolder surfaceHolder = getHolder();
@@ -66,7 +69,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             blobs[i] = new Blob(new PointF(
                     random.nextInt(1000) - 500,
                     random.nextInt(2000) - 1000),
-                    random.nextInt(100),
+                    random.nextInt(50) + 20,
                     ContextCompat.getColor(context, R.color.enemy),
                     coronaSpriteSheet.getSpriteByIndex(0, 3)
             );
@@ -86,7 +89,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         canvas.scale(1 / scaleFactor, 1 / scaleFactor, player.getPosition().x, player.getPosition().y);
         canvas.translate(player.getPosition().x - getWidth() / 2f, player.getPosition().y - getHeight() / 2f);
 
-        joystick.draw(canvas);
+        movingJoystick.draw(canvas);
+        lookingJoystick.draw(canvas);
 
         drawUPS(canvas);
         drawFPS(canvas);
@@ -101,15 +105,28 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-        joystick.update();
-        player.setAcceleration(new PointF(joystick.getActuator().x * Blob.MAX_ACCELERATION, joystick.getActuator().y * Blob.MAX_ACCELERATION));
+        movingJoystick.update();
+        lookingJoystick.update();
+
+        player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
+        if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
+            player.setAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI));
         player.update();
     }
 
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
-        if (joystick.useTouch(event)) return true;
+        int index = event.getActionIndex();
+        int action = event.getActionMasked();
+        int pointerId = event.getPointerId(index);
+        Log.d("hii", index + " " + action + " " + pointerId);
+
+        if (event.getX(index) < getWidth() / 2f) {
+            if (movingJoystick.useTouch(event, action, index)) return true;
+        } else {
+            if (lookingJoystick.useTouch(event, action, index)) return true;
+        }
 
         return super.onTouchEvent(event);
     }
@@ -128,7 +145,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        joystick = new Joystick(100, 50);
+        movingJoystick = new Joystick(100, 50);
+        lookingJoystick = new Joystick(100, 50);
+
         if (gameLoop.getState().equals(Thread.State.TERMINATED)) {
             gameLoop = new GameLoop(this, holder);
         }

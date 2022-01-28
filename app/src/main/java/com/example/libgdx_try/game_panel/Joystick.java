@@ -83,16 +83,16 @@ public class Joystick {
         this.visible = visible;
     }
 
-    public boolean useTouch(MotionEvent event) {
+    public boolean useTouch(MotionEvent event, int action, int index) {
         // Return true if used the touch event
-        switch (event.getAction()) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
-                setCenter(new Point((int) event.getX(), (int) event.getY()));
-                setActuator(new PointF(event.getX(), event.getY()));
+                setCenter(new Point((int) event.getX(index), (int) event.getY(index)));
+                setActuator(new PointF(event.getX(index), event.getY(index)));
                 setVisible(true);
                 return true;
             case MotionEvent.ACTION_MOVE:
-                setActuator(new PointF(event.getX(), event.getY()));
+                setActuator(new PointF(event.getX(index), event.getY(index)));
                 return true;
             case MotionEvent.ACTION_UP:
                 resetActuator();

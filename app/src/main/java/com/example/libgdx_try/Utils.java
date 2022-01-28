@@ -2,10 +2,13 @@ package com.example.libgdx_try;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.DisplayMetrics;
 
 public class Utils {
+    Matrix matrix;
+
     public static float convertDpToPixel(float dp, Context context) {
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }

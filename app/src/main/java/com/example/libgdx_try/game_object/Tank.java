@@ -2,7 +2,9 @@ package com.example.libgdx_try.game_object;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 
@@ -11,8 +13,11 @@ import com.example.libgdx_try.graphics.Sprite;
 public class Tank extends Blob {
 
     Point barrelSize = new Point(80, 30);
-    float angle = 30; // 0 - 360
+    float angle = 0; // 0 - 360
+    int reloadMill = 100;
     Paint barrelPaint;
+    Matrix barrelRotationMatrix = new Matrix(); // For server optimisation. used instead of "canvas.rotate()"
+    Path barrelPath = new Path();
 
     public Tank(PointF position, float radius, int color, Sprite sprite) {
         super(position, radius, color, sprite);
@@ -21,17 +26,32 @@ public class Tank extends Blob {
         barrelPaint.setColor(Color.parseColor("#cccccc"));
     }
 
-    public Tank(PointF position, float radius, int color, Sprite sprite, Point barrelSize) {
+    public Tank(PointF position, float radius, int color, Sprite sprite, Point barrelSize, int reloadMill) {
         this(position, radius, color, sprite);
 
         this.barrelSize = barrelSize;
+        this.reloadMill = reloadMill;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.rotate(angle, position.x, position.y);
-        canvas.drawRect(position.x, position.y - (float) barrelSize.y / 2, position.x + barrelSize.x, position.y + (float) barrelSize.y / 2, barrelPaint);
-        canvas.rotate(-angle, position.x, position.y);
+        barrelRotationMatrix.setRotate(angle);
+        // 2d matrix of the barrel
+        float[] points = new float[]{
+                0, -barrelSize.y / 2f,
+                barrelSize.x, -barrelSize.y / 2f,
+                barrelSize.x, +barrelSize.y / 2f,
+                0, +barrelSize.y / 2f
+        };
+        barrelRotationMatrix.mapPoints(points);
+
+        barrelPath.reset();
+        barrelPath.moveTo(points[0] + position.x, points[1] + position.y);
+        barrelPath.lineTo(points[2] + position.x, points[3] + position.y);
+        barrelPath.lineTo(points[4] + position.x, points[5] + position.y);
+        barrelPath.lineTo(points[6] + position.x, points[7] + position.y);
+
+        canvas.drawPath(barrelPath, barrelPaint);
 
         super.draw(canvas);
     }
@@ -39,7 +59,13 @@ public class Tank extends Blob {
     @Override
     public void update() {
         super.update();
+    }
 
-        angle++;
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
     }
 }

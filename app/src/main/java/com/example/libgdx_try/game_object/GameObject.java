@@ -2,6 +2,7 @@ package com.example.libgdx_try.game_object;
 
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.view.MotionEvent;
 
 public abstract class GameObject {
     protected PointF position;
@@ -38,5 +39,9 @@ public abstract class GameObject {
 
     public void setAcceleration(PointF acceleration) {
         this.acceleration = acceleration;
+    }
+
+    public boolean useTouch(MotionEvent event, int action, int index) {
+        return false;
     }
 }
