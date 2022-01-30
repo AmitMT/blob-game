@@ -17,6 +17,10 @@ public class Utils {
         return new PointF(p1.x + (p2.x - p1.x) * t, p1.y + (p2.y - p1.y) * t);
     }
 
+    public static float lerp(float num1, float num2, float t) {
+        return num1 + (num2 - num1) * t;
+    }
+
     public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }

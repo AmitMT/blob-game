@@ -1,14 +1,13 @@
 package com.example.libgdx_try;
 
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread {
     public static final float MAX_UPS = 60;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
-    boolean isRunning;
     final SurfaceHolder surfaceHolder;
+    boolean isRunning;
     Game game;
     double avgUPS;
     double avgFPS;

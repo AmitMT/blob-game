@@ -8,6 +8,7 @@ public abstract class GameObject {
     protected PointF position;
     protected PointF velocity = new PointF(0, 0);
     protected PointF acceleration = new PointF(0, 0);
+    boolean active = true;
 
     public GameObject(PointF position) {
         this.position = position;
@@ -15,7 +16,11 @@ public abstract class GameObject {
 
     public abstract void draw(Canvas canvas);
 
-    public abstract void update();
+    public void update() {
+        if (!active) return;
+        velocity.offset(acceleration.x, acceleration.y);
+        position.offset(velocity.x, velocity.y);
+    }
 
     public PointF getPosition() {
         return position;
@@ -39,6 +44,14 @@ public abstract class GameObject {
 
     public void setAcceleration(PointF acceleration) {
         this.acceleration = acceleration;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public boolean useTouch(MotionEvent event, int action, int index) {

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -47,10 +46,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         ));
         CoronaSpriteSheet coronaSpriteSheet = new CoronaSpriteSheet(context);
 
+        Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
         player = new Tank(
                 new PointF(0, 0),
                 30,
-                ContextCompat.getColor(context, R.color.player),
+                playerPaint,
                 coronaSpriteSheet.getSpriteByIndex(0, 0),
                 new Point(50, 20),
                 100
@@ -64,13 +65,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         UPSPaint = new Paint();
         UPSPaint.setColor(ContextCompat.getColor(context, R.color.FPS_meter));
         UPSPaint.setTextSize(30);
+
         Random random = new Random();
+        Paint enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        enemyPaint.setColor(ContextCompat.getColor(context, R.color.enemy));
         for (int i = 0; i < blobs.length; i++) {
             blobs[i] = new Blob(new PointF(
                     random.nextInt(1000) - 500,
                     random.nextInt(2000) - 1000),
                     random.nextInt(50) + 20,
-                    ContextCompat.getColor(context, R.color.enemy),
+                    enemyPaint,
                     coronaSpriteSheet.getSpriteByIndex(0, 3)
             );
         }
@@ -110,7 +114,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
         if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
-            player.setAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI));
+            player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
+        if (lookingJoystick.isVisible()) player.shoot();
         player.update();
     }
 
@@ -120,7 +125,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         int index = event.getActionIndex();
         int action = event.getActionMasked();
         int pointerId = event.getPointerId(index);
-        Log.d("hii", index + " " + action + " " + pointerId);
 
         if (event.getX(index) < getWidth() / 2f) {
             if (movingJoystick.useTouch(event, action, index)) return true;
