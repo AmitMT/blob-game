@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -18,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.libgdx_try.game_object.Blob;
 import com.example.libgdx_try.game_object.Tank;
+import com.example.libgdx_try.game_panel.DebugText;
 import com.example.libgdx_try.game_panel.Joystick;
 import com.example.libgdx_try.graphics.CoronaSpriteSheet;
 
@@ -30,8 +30,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     Blob[] blobs = new Blob[100];
     Joystick movingJoystick;
     Joystick lookingJoystick;
-    Paint UPSPaint;
     float scaleFactor = 4;
+    DebugText fpsDebugText;
+    DebugText upsDebugText;
 
     public Game(Context context) {
         this(context, null);
@@ -48,13 +49,18 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
+
+        Tank.Options playerOptions = (Tank.Options) new Tank.Options()
+                .setBarrelOptions(new Tank.Barrel.Options()
+                        .setLength(50)
+                        .setThickness(20)
+                )
+                .setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
+                .setPaint(playerPaint);
         player = new Tank(
                 new PointF(0, 0),
                 30,
-                playerPaint,
-                coronaSpriteSheet.getSpriteByIndex(0, 0),
-                new Point(50, 20),
-                100
+                playerOptions
         );
 
         SurfaceHolder surfaceHolder = getHolder();
@@ -62,20 +68,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         gameLoop = new GameLoop(this, surfaceHolder);
 
-        UPSPaint = new Paint();
-        UPSPaint.setColor(ContextCompat.getColor(context, R.color.FPS_meter));
-        UPSPaint.setTextSize(30);
+        fpsDebugText = new DebugText(new PointF(20, 50), 48, ContextCompat.getColor(context, R.color.FPS_meter));
+        upsDebugText = new DebugText(new PointF(20, 100), 48, ContextCompat.getColor(context, R.color.FPS_meter));
 
         Random random = new Random();
         Paint enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         enemyPaint.setColor(ContextCompat.getColor(context, R.color.enemy));
+        Blob.Options enemiesOptions = (Blob.Options) new Blob.Options()
+                .setSprite(coronaSpriteSheet.getSpriteByIndex(0, 3))
+                .setPaint(enemyPaint);
         for (int i = 0; i < blobs.length; i++) {
             blobs[i] = new Blob(new PointF(
                     random.nextInt(1000) - 500,
                     random.nextInt(2000) - 1000),
                     random.nextInt(50) + 20,
-                    enemyPaint,
-                    coronaSpriteSheet.getSpriteByIndex(0, 3)
+                    enemiesOptions
             );
         }
 
@@ -96,8 +103,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         movingJoystick.draw(canvas);
         lookingJoystick.draw(canvas);
 
-        drawUPS(canvas);
-        drawFPS(canvas);
+        fpsDebugText.setText("FPS: " + gameLoop.getAvgFPS());
+        fpsDebugText.draw(canvas);
+        upsDebugText.draw(canvas);
     }
 
     public void drawRelationalToPlayer(Canvas canvas) {
@@ -109,6 +117,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
+        upsDebugText.setText("UPS: " + gameLoop.getAvgUPS());
         movingJoystick.update();
         lookingJoystick.update();
 
@@ -135,37 +144,23 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         return super.onTouchEvent(event);
     }
 
-    public void drawUPS(Canvas canvas) {
-        String avgUPS = Double.toString(gameLoop.getAvgUPS());
-
-        canvas.drawText("UPS: " + avgUPS, 15, 40, UPSPaint);
-    }
-
-    public void drawFPS(Canvas canvas) {
-        String avgFPS = Double.toString(gameLoop.getAvgFPS());
-
-        canvas.drawText("FPS: " + avgFPS, 15, 75, UPSPaint);
-    }
-
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         movingJoystick = new Joystick(100, 50);
         lookingJoystick = new Joystick(100, 50);
 
-        if (gameLoop.getState().equals(Thread.State.TERMINATED)) {
+        if (gameLoop.getState().equals(Thread.State.TERMINATED))
             gameLoop = new GameLoop(this, holder);
-        }
+
         gameLoop.startLoop();
     }
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
     }
 
     public void pause() {

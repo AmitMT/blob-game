@@ -5,59 +5,50 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.PointF;
 
 import com.example.libgdx_try.Utils;
-import com.example.libgdx_try.graphics.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Tank extends Blob {
 
-    Point barrelSize = new Point(80, 30);
-    float angle = 0; // 0 - 360
-    Paint barrelPaint;
-    Matrix barrelRotationMatrix = new Matrix(); // For server optimisation. used instead of "canvas.rotate()"
-    Path barrelPath = new Path();
+    Barrel barrel;
+    Bullet.Options bulletOptions;
 
     List<Bullet> bullets = new ArrayList<>();
     int bulletRadius = 10;
     float bulletSpeed = 4;
     int reloadMill = 1000;
     long prevShotTime;
-    Paint bulletPaint;
 
-    public Tank(PointF position, float radius, Paint paint, Sprite sprite) {
-        super(position, radius, paint, sprite);
+    public Tank(PointF position, float radius) {
+        super(position, radius);
 
-        barrelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        barrelPaint.setColor(Color.parseColor("#cccccc"));
+        barrel = new Barrel();
     }
 
-    public Tank(PointF position, float radius, Paint paint, Sprite sprite, Point barrelSize, int reloadMill) {
-        this(position, radius, paint, sprite);
+    public Tank(PointF position, float radius, Options options) {
+        super(position, radius, options);
 
-        this.barrelSize = barrelSize;
-        this.reloadMill = reloadMill;
-        bulletPaint = paint;
+        barrel = new Barrel(options.barrelOptions);
     }
 
     @Override
     public void draw(Canvas canvas) {
 
-        barrelRotationMatrix.setRotate(angle);
+        barrel.rotationMatrix.setRotate(barrel.angle);
         // 2d matrix of the barrel
         float[] points = new float[]{
-                0, -barrelSize.y / 2f,
-                barrelSize.x, -barrelSize.y / 2f,
-                barrelSize.x, +barrelSize.y / 2f,
-                0, +barrelSize.y / 2f,
+                0, -barrel.thickness / 2f,
+                barrel.length, -barrel.thickness / 2f,
+                barrel.length, +barrel.thickness / 2f,
+                0, +barrel.thickness / 2f,
         };
-        barrelRotationMatrix.mapPoints(points);
+        barrel.rotationMatrix.mapPoints(points);
 
-        barrelPath.reset();
+        Path barrelPath = new Path();
         barrelPath.moveTo(points[0] + position.x, points[1] + position.y);
         barrelPath.lineTo(points[2] + position.x, points[3] + position.y);
         barrelPath.lineTo(points[4] + position.x, points[5] + position.y);
@@ -65,7 +56,7 @@ public class Tank extends Blob {
 
         bullets.forEach(bullet -> bullet.draw(canvas));
 
-        canvas.drawPath(barrelPath, barrelPaint);
+        canvas.drawPath(barrelPath, barrel.paint);
 
         super.draw(canvas);
     }
@@ -84,20 +75,20 @@ public class Tank extends Blob {
     }
 
     public float getAngle() {
-        return angle;
+        return barrel.angle;
     }
 
     public void setAngle(float angle) {
-        this.angle = angle;
+        barrel.angle = angle;
     }
 
     public void lerpToAngle(float angle, float speed) {
-        if (angle - this.angle > 180)
-            this.angle = Utils.lerp(this.angle + 360, angle, speed) % 360;
-        else if (this.angle - angle > 180) {
-            this.angle = Utils.lerp(this.angle, angle + 360, speed) % 360;
+        if (angle - barrel.angle > 180)
+            barrel.angle = Utils.lerp(barrel.angle + 360, angle, speed) % 360;
+        else if (barrel.angle - angle > 180) {
+            barrel.angle = Utils.lerp(barrel.angle, angle + 360, speed) % 360;
         } else {
-            this.angle = Utils.lerp(this.angle, angle, speed);
+            barrel.angle = Utils.lerp(barrel.angle, angle, speed);
         }
     }
 
@@ -107,24 +98,131 @@ public class Tank extends Blob {
         long currTime = System.currentTimeMillis();
         if (prevShotTime + reloadMill * 10L < currTime) {
             float[] positionAndVelocity = {
-                    barrelSize.x - bulletRadius, 0, // position (end of barrel)
+                    barrel.length - bulletRadius, 0, // position (end of barrel)
                     bulletSpeed, 0 // velocity
             };
-            barrelRotationMatrix.mapPoints(positionAndVelocity);
+            barrel.rotationMatrix.mapPoints(positionAndVelocity);
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setColor(Color.WHITE);
+
+            Bullet.Options options = (Bullet.Options) new Bullet.Options()
+                    .setTimeToLive(500)
+                    .setDisintegrationSpeed(0.1f)
+                    .setPaint(paint)
+                    .setVelocity(new PointF(velocity.x + positionAndVelocity[2], velocity.y + positionAndVelocity[3]));
+
             Bullet bullet = new Bullet(new PointF(
                     position.x + positionAndVelocity[0],
                     position.y + positionAndVelocity[1]),
-                    new PointF(velocity.x + positionAndVelocity[2],
-                            velocity.y + positionAndVelocity[3]),
                     bulletRadius,
-                    500,
-                    paint
+                    options
             );
             bullets.add(bullet);
             prevShotTime = currTime;
+        }
+    }
+
+    public static class Options extends Blob.Options {
+
+        protected Barrel.Options barrelOptions = new Barrel.Options();
+        protected Bullet.Options bulletOptions = new Bullet.Options();
+
+        public Options() {
+        }
+
+        public Barrel.Options getBarrelOptions() {
+            return barrelOptions;
+        }
+
+        public Options setBarrelOptions(Barrel.Options barrelOptions) {
+            this.barrelOptions = barrelOptions;
+            return this;
+        }
+
+        public Bullet.Options getBulletOptions() {
+            return bulletOptions;
+        }
+
+        public Options setBulletOptions(Bullet.Options bulletOptions) {
+            this.bulletOptions = bulletOptions;
+            return this;
+        }
+    }
+
+    public static class Barrel {
+
+        int length = 80;
+        int thickness = 30;
+        float angle = 0; // 0 - 360
+        Paint paint;
+        Matrix rotationMatrix = new Matrix(); // For server optimisation. used instead of "canvas.rotate()"
+
+        {
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(Color.parseColor("#cccccc"));
+        }
+
+        public Barrel() {
+        }
+
+        public Barrel(Options options) {
+            length = options.length;
+            thickness = options.thickness;
+            angle = options.angle;
+            paint = options.paint;
+        }
+
+        public static class Options {
+
+            protected int length = 80;
+            protected int thickness = 30;
+            protected float angle = 0;
+            protected Paint paint;
+
+            {
+                paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paint.setColor(Color.parseColor("#cccccc"));
+            }
+
+            public Options() {
+            }
+
+            public int getLength() {
+                return length;
+            }
+
+            public Options setLength(int length) {
+                this.length = length;
+                return this;
+            }
+
+            public int getThickness() {
+                return thickness;
+            }
+
+            public Options setThickness(int thickness) {
+                this.thickness = thickness;
+                return this;
+            }
+
+            public float getAngle() {
+                return angle;
+            }
+
+            public Options setAngle(float angle) {
+                this.angle = angle;
+                return this;
+            }
+
+            public Paint getPaint() {
+                return paint;
+            }
+
+            public Options setPaint(Paint paint) {
+                this.paint = paint;
+                return this;
+            }
         }
     }
 }

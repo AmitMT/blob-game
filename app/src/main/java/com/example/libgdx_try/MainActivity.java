@@ -1,14 +1,15 @@
 package com.example.libgdx_try;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     Game game;
+    boolean gameActive = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +21,20 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
 
-        game = new Game(this);
-        setContentView(game);
+        setContentView(R.layout.activity_main);
+
+        game = findViewById(R.id.game);
+
+        findViewById(R.id.btn).setOnClickListener(view -> {
+            if (gameActive) {
+                game.pause();
+                gameActive = false;
+            } else {
+                GameLoop gameLoop = GameLoop.gameLoop; // null
+                gameLoop.startLoop();
+                gameActive = true;
+            }
+        });
     }
 
     @Override

@@ -8,10 +8,17 @@ public abstract class GameObject {
     protected PointF position;
     protected PointF velocity = new PointF(0, 0);
     protected PointF acceleration = new PointF(0, 0);
-    boolean active = true;
+    protected boolean active = true;
 
     public GameObject(PointF position) {
         this.position = position;
+    }
+
+    public GameObject(PointF position, Options options) {
+        this.position = position;
+        this.velocity = options.velocity;
+        this.acceleration = options.acceleration;
+        this.active = options.active;
     }
 
     public abstract void draw(Canvas canvas);
@@ -56,5 +63,42 @@ public abstract class GameObject {
 
     public boolean useTouch(MotionEvent event, int action, int index) {
         return false;
+    }
+
+    public static abstract class Options {
+
+        protected PointF velocity = new PointF(0, 0);
+        protected PointF acceleration = new PointF(0, 0);
+        protected boolean active = true;
+
+        public Options() {
+        }
+
+        public PointF getVelocity() {
+            return velocity;
+        }
+
+        public Options setVelocity(PointF velocity) {
+            this.velocity = velocity;
+            return this;
+        }
+
+        public PointF getAcceleration() {
+            return acceleration;
+        }
+
+        public Options setAcceleration(PointF acceleration) {
+            this.acceleration = acceleration;
+            return this;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public Options setActive(boolean active) {
+            this.active = active;
+            return this;
+        }
     }
 }

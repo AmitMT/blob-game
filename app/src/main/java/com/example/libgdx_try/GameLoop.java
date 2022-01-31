@@ -4,17 +4,30 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread {
+
     public static final float MAX_UPS = 60;
     public static final double UPS_PERIOD = 1E+3 / MAX_UPS;
+    static GameLoop gameLoop; // singleton instance
     final SurfaceHolder surfaceHolder;
     boolean isRunning;
     Game game;
     double avgUPS;
     double avgFPS;
 
-    public GameLoop(Game game, SurfaceHolder surfaceHolder) {
+    GameLoop(Game game, SurfaceHolder surfaceHolder) {
         this.game = game;
         this.surfaceHolder = surfaceHolder;
+    }
+
+    public static GameLoop getInstance(Game game, SurfaceHolder surfaceHolder) {
+        if (gameLoop == null)
+            gameLoop = new GameLoop(game, surfaceHolder);
+
+        return gameLoop;
+    }
+
+    public static GameLoop getInstance() {
+        return gameLoop;
     }
 
     public double getAvgUPS() {

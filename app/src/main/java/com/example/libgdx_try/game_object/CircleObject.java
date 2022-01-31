@@ -1,15 +1,18 @@
 package com.example.libgdx_try.game_object;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
 public class CircleObject extends GameObject {
+
     protected float radius;
     protected Paint paint;
 
-    public CircleObject(PointF position) {
-        super(position);
+    {
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.parseColor("#ffffff"));
     }
 
     public CircleObject(PointF position, float radius) {
@@ -18,16 +21,16 @@ public class CircleObject extends GameObject {
         this.radius = radius;
     }
 
-    public CircleObject(PointF position, float radius, Paint paint) {
-        super(position);
+    public CircleObject(PointF position, float radius, Options options) {
+        super(position, options);
 
-        this.paint = paint;
         this.radius = radius;
+        paint = options.paint;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(position.x, position.y, radius, paint);
+        if (paint != null) canvas.drawCircle(position.x, position.y, radius, paint);
     }
 
     public float getRadius() {
@@ -52,5 +55,22 @@ public class CircleObject extends GameObject {
 
     public void setColor(int color) {
         paint.setColor(color);
+    }
+
+    public static class Options extends GameObject.Options {
+
+        protected Paint paint;
+
+        public Options() {
+        }
+
+        public Paint getPaint() {
+            return paint;
+        }
+
+        public Options setPaint(Paint paint) {
+            this.paint = paint;
+            return this;
+        }
     }
 }

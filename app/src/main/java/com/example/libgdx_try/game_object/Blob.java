@@ -1,7 +1,6 @@
 package com.example.libgdx_try.game_object;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.PointF;
 
 import com.example.libgdx_try.GameLoop;
@@ -16,10 +15,14 @@ public class Blob extends CircleObject {
 
     protected Sprite sprite;
 
-    public Blob(PointF position, float radius, Paint paint, Sprite sprite) {
-        super(position, radius, paint);
+    public Blob(PointF position, float radius) {
+        super(position, radius);
+    }
 
-        this.sprite = sprite;
+    public Blob(PointF position, float radius, Options options) {
+        super(position, radius, options);
+
+        sprite = options.sprite;
     }
 
     @Override
@@ -33,5 +36,23 @@ public class Blob extends CircleObject {
         super.update();
 
         velocity.set(velocity.x * (1 - FRICTION), velocity.y * (1 - FRICTION));
+    }
+
+    public static class Options extends CircleObject.Options {
+
+        protected Sprite sprite;
+
+        public Options() {
+        }
+
+        public Sprite getSprite() {
+            return sprite;
+        }
+
+        public Options setSprite(Sprite sprite) {
+            this.sprite = sprite;
+            return this;
+        }
+
     }
 }
