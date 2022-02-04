@@ -133,7 +133,20 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         int index = event.getActionIndex();
         int action = event.getActionMasked();
-        int pointerId = event.getPointerId(index);
+
+        if (action == MotionEvent.ACTION_MOVE) {
+            int count = event.getPointerCount();
+
+            boolean usedTouch = false;
+            for (int i = 0; i < count; i++) {
+                if (event.getX(i) < getWidth() / 2f) {
+                    if (movingJoystick.useTouch(event, action, i)) usedTouch = true;
+                } else {
+                    if (lookingJoystick.useTouch(event, action, i)) usedTouch = true;
+                }
+            }
+            if (usedTouch) return true;
+        }
 
         if (event.getX(index) < getWidth() / 2f) {
             if (movingJoystick.useTouch(event, action, index)) return true;

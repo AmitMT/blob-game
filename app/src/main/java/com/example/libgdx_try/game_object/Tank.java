@@ -20,7 +20,7 @@ public class Tank extends Blob {
     List<Bullet> bullets = new ArrayList<>();
     int bulletRadius = 10;
     float bulletSpeed = 4;
-    int reloadMill = 1000;
+    int reloadMill = 400;
     long prevShotTime;
 
     public Tank(PointF position, float radius) {
@@ -96,7 +96,7 @@ public class Tank extends Blob {
 
     public void shoot() {
         long currTime = System.currentTimeMillis();
-        if (prevShotTime + reloadMill * 10L < currTime) {
+        if (prevShotTime + reloadMill < currTime) {
             float[] positionAndVelocity = {
                     barrel.length - bulletRadius, 0, // position (end of barrel)
                     bulletSpeed, 0 // velocity
@@ -107,10 +107,10 @@ public class Tank extends Blob {
             paint.setColor(Color.WHITE);
 
             Bullet.Options options = (Bullet.Options) new Bullet.Options()
-                    .setTimeToLive(500)
-                    .setDisintegrationSpeed(0.1f)
+                    .setTimeToLive(1500)
+                    .setDisintegrationSpeed(0.05f)
                     .setPaint(paint)
-                    .setVelocity(new PointF(velocity.x + positionAndVelocity[2], velocity.y + positionAndVelocity[3]));
+                    .setVelocity(new PointF(velocity.x / 2 + positionAndVelocity[2], velocity.y / 2 + positionAndVelocity[3]));
 
             Bullet bullet = new Bullet(new PointF(
                     position.x + positionAndVelocity[0],

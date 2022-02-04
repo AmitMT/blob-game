@@ -8,7 +8,7 @@ import com.example.libgdx_try.graphics.Sprite;
 
 public class Blob extends CircleObject {
 
-    public static final float MAX_ACCELERATION_IN_SECONDS = 25;
+    public static final float MAX_ACCELERATION_IN_SECONDS = 18;
     public static final float MAX_ACCELERATION = MAX_ACCELERATION_IN_SECONDS / GameLoop.MAX_UPS;
     public static final float FRICTION = .05f;
     // The blob's max velocity is ( (MAX_ACCELERATION_IN_SECONDS / FRICTION) + MAX_ACCELERATION_IN_SECONDS )

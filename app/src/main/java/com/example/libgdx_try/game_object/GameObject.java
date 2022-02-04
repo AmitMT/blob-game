@@ -65,7 +65,7 @@ public abstract class GameObject {
         return false;
     }
 
-    public static abstract class Options {
+    public static class Options {
 
         protected PointF velocity = new PointF(0, 0);
         protected PointF acceleration = new PointF(0, 0);

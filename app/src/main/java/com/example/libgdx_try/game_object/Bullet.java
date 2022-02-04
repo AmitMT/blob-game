@@ -5,8 +5,8 @@ import android.graphics.PointF;
 
 public class Bullet extends CircleObject {
 
-    int timeToLive = 1000;
-    float disintegrationSpeed = 0.1f; // slow - 0 < x < 1 - fast
+    int timeToLive = 3000;
+    float disintegrationSpeed = 0.05f; // slow - 0 < x < 1 - fast
     long timeSinceCreation;
     boolean dying;
 
@@ -45,8 +45,8 @@ public class Bullet extends CircleObject {
 
     public static class Options extends CircleObject.Options {
 
-        protected int timeToLive;
-        protected float disintegrationSpeed = 0.1f;
+        protected int timeToLive = 3000;
+        protected float disintegrationSpeed = 0.05f;
 
         public Options() {
         }
