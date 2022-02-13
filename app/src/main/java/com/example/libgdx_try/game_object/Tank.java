@@ -7,7 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 
-import com.example.libgdx_try.Utils;
+import com.example.libgdx_try.camera.CameraShake;
+import com.example.libgdx_try.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,9 +95,11 @@ public class Tank extends Blob {
 
     // TODO: wait what if the user changes the phone's time. I need a bypass.
 
-    public void shoot() {
+    public void shoot(CameraShake cameraShake) {
         long currTime = System.currentTimeMillis();
         if (prevShotTime + reloadMill < currTime) {
+            cameraShake.increaseTrauma(.5f);
+
             float[] positionAndVelocity = {
                     barrel.length - bulletRadius, 0, // position (end of barrel)
                     bulletSpeed, 0 // velocity

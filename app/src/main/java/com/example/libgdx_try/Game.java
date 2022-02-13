@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.example.libgdx_try.camera.Camera;
+import com.example.libgdx_try.camera.CameraShake;
 import com.example.libgdx_try.game_object.Blob;
 import com.example.libgdx_try.game_object.Tank;
 import com.example.libgdx_try.game_panel.DebugText;
@@ -26,13 +28,17 @@ import java.util.Random;
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     GameLoop gameLoop;
+    Camera camera;
     Tank player;
     Blob[] blobs = new Blob[100];
+    CameraShake cameraShake = new CameraShake();
     Joystick movingJoystick;
     Joystick lookingJoystick;
     float scaleFactor = 4;
     DebugText fpsDebugText;
     DebugText upsDebugText;
+
+    PointF cameraPos = new PointF();
 
     public Game(Context context) {
         this(context, null);
@@ -62,6 +68,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 30,
                 playerOptions
         );
+
 
         SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
@@ -94,11 +101,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
 
         canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
-        canvas.translate(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y);
-        canvas.scale(scaleFactor, scaleFactor, player.getPosition().x, player.getPosition().y);
+
+        camera.setPosition(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
+
+        camera.transformCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
+        cameraShake.transformCanvas(canvas, player.getPosition());
         drawRelationalToPlayer(canvas);
-        canvas.scale(1 / scaleFactor, 1 / scaleFactor, player.getPosition().x, player.getPosition().y);
-        canvas.translate(player.getPosition().x - getWidth() / 2f, player.getPosition().y - getHeight() / 2f);
+        cameraShake.revertCanvas(canvas, player.getPosition());
+        camera.revertCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
 
         movingJoystick.draw(canvas);
         lookingJoystick.draw(canvas);
@@ -118,13 +128,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         upsDebugText.setText("UPS: " + gameLoop.getAvgUPS());
+        cameraShake.update();
         movingJoystick.update();
         lookingJoystick.update();
 
         player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
         if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
             player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
-        if (lookingJoystick.isVisible()) player.shoot();
+        if (lookingJoystick.isVisible()) player.shoot(cameraShake);
         player.update();
     }
 
@@ -159,8 +170,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
+        camera = new Camera(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
         movingJoystick = new Joystick(100, 50);
         lookingJoystick = new Joystick(100, 50);
+        cameraPos.set(getWidth() / 2f, getHeight() / 2f);
 
         if (gameLoop.getState().equals(Thread.State.TERMINATED))
             gameLoop = new GameLoop(this, holder);
@@ -174,6 +187,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+    }
+
+    public void resume() {
+        SurfaceHolder surfaceHolder = getHolder();
+        gameLoop = new GameLoop(this, surfaceHolder);
+        gameLoop.startLoop();
     }
 
     public void pause() {

@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 game.pause();
                 gameActive = false;
             } else {
-                GameLoop gameLoop = GameLoop.gameLoop; // null
-                gameLoop.startLoop();
+                game.resume();
                 gameActive = true;
             }
         });

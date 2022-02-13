@@ -16,9 +16,9 @@ public abstract class GameObject {
 
     public GameObject(PointF position, Options options) {
         this.position = position;
-        this.velocity = options.velocity;
-        this.acceleration = options.acceleration;
-        this.active = options.active;
+        velocity = options.velocity;
+        acceleration = options.acceleration;
+        active = options.active;
     }
 
     public abstract void draw(Canvas canvas);

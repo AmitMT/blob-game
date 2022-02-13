@@ -1,4 +1,4 @@
-package com.example.libgdx_try;
+package com.example.libgdx_try.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
