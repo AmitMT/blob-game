@@ -5,25 +5,25 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 
 public abstract class GamePanel {
-    protected PointF position;
+	protected PointF position;
 
-    public GamePanel(PointF position) {
-        this.position = position;
-    }
+	public GamePanel(PointF position) {
+		this.position = position;
+	}
 
-    public abstract void draw(Canvas canvas);
+	public abstract void draw(Canvas canvas);
 
-    public abstract void update();
+	public abstract void update();
 
-    public PointF getPosition() {
-        return position;
-    }
+	public PointF getPosition() {
+		return position;
+	}
 
-    public void setPosition(PointF center) {
-        this.position = center;
-    }
+	public void setPosition(PointF center) {
+		this.position = center;
+	}
 
-    public boolean useTouch(MotionEvent event, int action, int index) {
-        return false;
-    }
+	public boolean useTouch(MotionEvent event, int action, int index) {
+		return false;
+	}
 }

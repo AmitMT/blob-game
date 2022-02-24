@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">LibGDX_try</string>
-    <string name="toggle_game">toggle game</string>
+	<string name="app_name">LibGDX_try</string>
+	<string name="toggle_game">toggle game</string>
+	<string name="got_it">Got it!</string>
 </resources>

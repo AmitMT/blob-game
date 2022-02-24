@@ -27,175 +27,175 @@ import java.util.Random;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
-    GameLoop gameLoop;
-    Camera camera;
-    Tank player;
-    Blob[] blobs = new Blob[100];
-    CameraShake cameraShake = new CameraShake();
-    Joystick movingJoystick;
-    Joystick lookingJoystick;
-    float scaleFactor = 4;
-    DebugText fpsDebugText;
-    DebugText upsDebugText;
+	GameLoop gameLoop;
+	Camera camera;
+	Tank player;
+	Blob[] blobs = new Blob[100];
+	CameraShake cameraShake = new CameraShake();
+	Joystick movingJoystick;
+	Joystick lookingJoystick;
+	float scaleFactor = 4;
+	DebugText fpsDebugText;
+	DebugText upsDebugText;
 
-    PointF cameraPos = new PointF();
+	PointF cameraPos = new PointF();
 
-    public Game(Context context) {
-        this(context, null);
-    }
+	public Game(Context context) {
+		this(context, null);
+	}
 
-    public Game(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+	public Game(Context context, @Nullable AttributeSet attrs) {
+		super(context, attrs);
 
-        setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        ));
-        CoronaSpriteSheet coronaSpriteSheet = new CoronaSpriteSheet(context);
+		setLayoutParams(new ViewGroup.LayoutParams(
+			ViewGroup.LayoutParams.MATCH_PARENT,
+			ViewGroup.LayoutParams.MATCH_PARENT
+		));
+		CoronaSpriteSheet coronaSpriteSheet = new CoronaSpriteSheet(context);
 
-        Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
+		Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
 
-        Tank.Options playerOptions = (Tank.Options) new Tank.Options()
-                .setBarrelOptions(new Tank.Barrel.Options()
-                        .setLength(50)
-                        .setThickness(20)
-                )
-                .setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
-                .setPaint(playerPaint);
-        player = new Tank(
-                new PointF(0, 0),
-                30,
-                playerOptions
-        );
+		Tank.Options playerOptions = (Tank.Options) new Tank.Options()
+			.setBarrelOptions(new Tank.Barrel.Options()
+				.setLength(50)
+				.setThickness(20)
+			)
+			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
+			.setPaint(playerPaint);
+		player = new Tank(
+			new PointF(0, 0),
+			30,
+			playerOptions
+		);
 
 
-        SurfaceHolder surfaceHolder = getHolder();
-        surfaceHolder.addCallback(this);
+		SurfaceHolder surfaceHolder = getHolder();
+		surfaceHolder.addCallback(this);
 
-        gameLoop = new GameLoop(this, surfaceHolder);
+		gameLoop = new GameLoop(this, surfaceHolder);
 
-        fpsDebugText = new DebugText(new PointF(20, 50), 48, ContextCompat.getColor(context, R.color.FPS_meter));
-        upsDebugText = new DebugText(new PointF(20, 100), 48, ContextCompat.getColor(context, R.color.FPS_meter));
+		fpsDebugText = new DebugText(new PointF(20, 50), 48, ContextCompat.getColor(context, R.color.FPS_meter));
+		upsDebugText = new DebugText(new PointF(20, 100), 48, ContextCompat.getColor(context, R.color.FPS_meter));
 
-        Random random = new Random();
-        Paint enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        enemyPaint.setColor(ContextCompat.getColor(context, R.color.enemy));
-        Blob.Options enemiesOptions = (Blob.Options) new Blob.Options()
-                .setSprite(coronaSpriteSheet.getSpriteByIndex(0, 3))
-                .setPaint(enemyPaint);
-        for (int i = 0; i < blobs.length; i++) {
-            blobs[i] = new Blob(new PointF(
-                    random.nextInt(1000) - 500,
-                    random.nextInt(2000) - 1000),
-                    random.nextInt(50) + 20,
-                    enemiesOptions
-            );
-        }
+		Random random = new Random();
+		Paint enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		enemyPaint.setColor(ContextCompat.getColor(context, R.color.enemy));
+		Blob.Options enemiesOptions = (Blob.Options) new Blob.Options()
+			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 3))
+			.setPaint(enemyPaint);
+		for (int i = 0; i < blobs.length; i++) {
+			blobs[i] = new Blob(new PointF(
+				random.nextInt(1000) - 500,
+				random.nextInt(2000) - 1000),
+				random.nextInt(50) + 20,
+				enemiesOptions
+			);
+		}
 
-        setFocusable(true);
-    }
+		setFocusable(true);
+	}
 
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
+	@Override
+	public void draw(Canvas canvas) {
+		super.draw(canvas);
 
-        canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
+		canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
 
-        camera.setPosition(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
+		camera.setPosition(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
 
-        camera.transformCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
-        cameraShake.transformCanvas(canvas, player.getPosition());
-        drawRelationalToPlayer(canvas);
-        cameraShake.revertCanvas(canvas, player.getPosition());
-        camera.revertCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
+		camera.transformCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
+		cameraShake.transformCanvas(canvas, player.getPosition());
+		drawRelationalToPlayer(canvas);
+		cameraShake.revertCanvas(canvas, player.getPosition());
+		camera.revertCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
 
-        movingJoystick.draw(canvas);
-        lookingJoystick.draw(canvas);
+		movingJoystick.draw(canvas);
+		lookingJoystick.draw(canvas);
 
-        fpsDebugText.setText("FPS: " + gameLoop.getAvgFPS());
-        fpsDebugText.draw(canvas);
-        upsDebugText.draw(canvas);
-    }
+		fpsDebugText.setText("FPS: " + gameLoop.getAvgFPS());
+		fpsDebugText.draw(canvas);
+		upsDebugText.draw(canvas);
+	}
 
-    public void drawRelationalToPlayer(Canvas canvas) {
-        for (Blob blob : blobs) {
-            blob.draw(canvas);
-        }
+	public void drawRelationalToPlayer(Canvas canvas) {
+		for (Blob blob : blobs) {
+			blob.draw(canvas);
+		}
 
-        player.draw(canvas);
-    }
+		player.draw(canvas);
+	}
 
-    public void update() {
-        upsDebugText.setText("UPS: " + gameLoop.getAvgUPS());
-        cameraShake.update();
-        movingJoystick.update();
-        lookingJoystick.update();
+	public void update() {
+		upsDebugText.setText("UPS: " + gameLoop.getAvgUPS());
+		cameraShake.update();
+		movingJoystick.update();
+		lookingJoystick.update();
 
-        player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
-        if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
-            player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
-        if (lookingJoystick.isVisible()) player.shoot(cameraShake);
-        player.update();
-    }
+		player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
+		if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
+			player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
+		if (lookingJoystick.isVisible()) player.shoot(cameraShake);
+		player.update();
+	}
 
-    @Override
-    @SuppressLint("ClickableViewAccessibility")
-    public boolean onTouchEvent(MotionEvent event) {
-        int index = event.getActionIndex();
-        int action = event.getActionMasked();
+	@Override
+	@SuppressLint("ClickableViewAccessibility")
+	public boolean onTouchEvent(MotionEvent event) {
+		int index = event.getActionIndex();
+		int action = event.getActionMasked();
 
-        if (action == MotionEvent.ACTION_MOVE) {
-            int count = event.getPointerCount();
+		if (action == MotionEvent.ACTION_MOVE) {
+			int count = event.getPointerCount();
 
-            boolean usedTouch = false;
-            for (int i = 0; i < count; i++) {
-                if (event.getX(i) < getWidth() / 2f) {
-                    if (movingJoystick.useTouch(event, action, i)) usedTouch = true;
-                } else {
-                    if (lookingJoystick.useTouch(event, action, i)) usedTouch = true;
-                }
-            }
-            if (usedTouch) return true;
-        }
+			boolean usedTouch = false;
+			for (int i = 0; i < count; i++) {
+				if (event.getX(i) < getWidth() / 2f) {
+					if (movingJoystick.useTouch(event, action, i)) usedTouch = true;
+				} else {
+					if (lookingJoystick.useTouch(event, action, i)) usedTouch = true;
+				}
+			}
+			if (usedTouch) return true;
+		}
 
-        if (event.getX(index) < getWidth() / 2f) {
-            if (movingJoystick.useTouch(event, action, index)) return true;
-        } else {
-            if (lookingJoystick.useTouch(event, action, index)) return true;
-        }
+		if (event.getX(index) < getWidth() / 2f) {
+			if (movingJoystick.useTouch(event, action, index)) return true;
+		} else {
+			if (lookingJoystick.useTouch(event, action, index)) return true;
+		}
 
-        return super.onTouchEvent(event);
-    }
+		return super.onTouchEvent(event);
+	}
 
-    @Override
-    public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        camera = new Camera(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
-        movingJoystick = new Joystick(100, 50);
-        lookingJoystick = new Joystick(100, 50);
-        cameraPos.set(getWidth() / 2f, getHeight() / 2f);
+	@Override
+	public void surfaceCreated(@NonNull SurfaceHolder holder) {
+		camera = new Camera(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
+		movingJoystick = new Joystick(100, 50);
+		lookingJoystick = new Joystick(100, 50);
+		cameraPos.set(getWidth() / 2f, getHeight() / 2f);
 
-        if (gameLoop.getState().equals(Thread.State.TERMINATED))
-            gameLoop = new GameLoop(this, holder);
+		if (gameLoop.getState().equals(Thread.State.TERMINATED))
+			gameLoop = new GameLoop(this, holder);
 
-        gameLoop.startLoop();
-    }
+		gameLoop.startLoop();
+	}
 
-    @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-    }
+	@Override
+	public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+	}
 
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-    }
+	@Override
+	public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+	}
 
-    public void resume() {
-        SurfaceHolder surfaceHolder = getHolder();
-        gameLoop = new GameLoop(this, surfaceHolder);
-        gameLoop.startLoop();
-    }
+	public void resume() {
+		SurfaceHolder surfaceHolder = getHolder();
+		gameLoop = new GameLoop(this, surfaceHolder);
+		gameLoop.startLoop();
+	}
 
-    public void pause() {
-        gameLoop.stopLoop();
-    }
+	public void pause() {
+		gameLoop.stopLoop();
+	}
 }
