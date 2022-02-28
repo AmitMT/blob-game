@@ -15,11 +15,14 @@
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
-	<Button
+	<com.example.libgdx_try.ui.Button
 			android:id="@+id/btn"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="5dp"
+			android:padding="10dp"
 			android:text="@string/toggle_game"
+			android:textSize="11sp"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
