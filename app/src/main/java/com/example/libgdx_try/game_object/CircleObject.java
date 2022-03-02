@@ -9,6 +9,7 @@ public class CircleObject extends GameObject {
 
 	protected float radius;
 	protected Paint paint;
+	protected Paint borderPaint;
 
 	{
 		paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -26,11 +27,14 @@ public class CircleObject extends GameObject {
 
 		this.radius = radius;
 		paint = options.paint;
+		borderPaint = options.borderPaint;
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		if (paint != null) canvas.drawCircle(position.x, position.y, radius, paint);
+		if (borderPaint != null)
+			canvas.drawCircle(position.x, position.y, radius - borderPaint.getStrokeWidth() / 2 + 1, borderPaint);
 	}
 
 	public float getRadius() {
@@ -57,9 +61,18 @@ public class CircleObject extends GameObject {
 		paint.setColor(color);
 	}
 
+	public Paint getBorderPaint() {
+		return paint;
+	}
+
+	public void setBorderPaint(Paint borderPaint) {
+		this.borderPaint = borderPaint;
+	}
+
 	public static class Options extends GameObject.Options {
 
 		protected Paint paint;
+		protected Paint borderPaint;
 
 		public Options() {
 		}
@@ -70,6 +83,15 @@ public class CircleObject extends GameObject {
 
 		public Options setPaint(Paint paint) {
 			this.paint = paint;
+			return this;
+		}
+
+		public Paint getBorderPaint() {
+			return paint;
+		}
+
+		public Options setBorderPaint(Paint borderPaint) {
+			this.borderPaint = borderPaint;
 			return this;
 		}
 	}

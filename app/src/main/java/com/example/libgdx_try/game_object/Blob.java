@@ -27,7 +27,7 @@ public class Blob extends CircleObject {
 
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(position.x, position.y, radius, paint);
+		super.draw(canvas);
 	}
 
 	@Override

@@ -55,6 +55,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 		Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
+		Paint playerBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		playerBorderPaint.setStyle(Paint.Style.STROKE);
+		playerBorderPaint.setColor(ContextCompat.getColor(context, R.color.player_border));
+		playerBorderPaint.setStrokeWidth(4);
 
 		Tank.Options playerOptions = (Tank.Options) new Tank.Options()
 			.setBarrelOptions(new Tank.Barrel.Options()
@@ -62,7 +66,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 				.setThickness(20)
 			)
 			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
-			.setPaint(playerPaint);
+			.setPaint(playerPaint)
+			.setBorderPaint(playerBorderPaint);
 		player = new Tank(
 			new PointF(0, 0),
 			30,

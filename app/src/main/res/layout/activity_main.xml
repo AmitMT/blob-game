@@ -27,4 +27,31 @@
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
+	<View
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:background="@color/shadow" />
+
+	<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_margin="20dp"
+			android:background="@drawable/wifi_list_background"
+			android:padding="10dp">
+
+		<TextView
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1" />
+
+		<ListView
+				android:id="@+id/wifi_list"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+	</LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

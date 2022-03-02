@@ -1,16 +1,22 @@
 package com.example.libgdx_try;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.libgdx_try.network.Client;
+import com.example.libgdx_try.network.Server;
+import com.example.libgdx_try.network.WiFiDirectBroadcastReceiver;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,9 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
 	WifiP2pManager manager;
 	WifiP2pManager.Channel channel;
-	BroadcastReceiver receiver;
-
+	WiFiDirectBroadcastReceiver wifiReceiver;
 	IntentFilter intentFilter;
+
+	ListView wifiListView;
+
+	Server server;
+	Client client;
+
+	boolean isHost;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +63,13 @@ public class MainActivity extends AppCompatActivity {
 			if (gameActive) {
 				game.pause();
 				gameActive = false;
+
+				wifiReceiver.setDiscoveringPeers(this, false);
 			} else {
 				game.resume();
 				gameActive = true;
+
+				wifiReceiver.setDiscoveringPeers(this, true);
 			}
 		});
 
@@ -62,12 +78,26 @@ public class MainActivity extends AppCompatActivity {
 
 		manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
 		channel = manager.initialize(this, getMainLooper(), null);
-		receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+		wifiReceiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+
 		intentFilter = new IntentFilter();
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 		intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+		wifiReceiver.setDiscoveringPeers(this, true);
+
+		wifiListView = findViewById(R.id.wifi_list);
+		wifiReceiver.addPeerListListener(wifiP2pDeviceList -> {
+			WifiP2pDevice[] devices = wifiP2pDeviceList.getDeviceList().toArray(new WifiP2pDevice[0]);
+			String[] deviceList = new String[devices.length];
+			for (int i = 0; i < deviceList.length; i++)
+				deviceList[i] = devices[i].deviceName;
+
+			ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, deviceList);
+			wifiListView.setAdapter(arrayAdapter);
+		});
 	}
 
 	@Override
@@ -86,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		registerReceiver(receiver, intentFilter);
+		registerReceiver(wifiReceiver, intentFilter);
 	}
 
 	@Override
@@ -94,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 		game.pause();
 		super.onPause();
 
-		unregisterReceiver(receiver);
+		unregisterReceiver(wifiReceiver);
 	}
 
 	@Override
