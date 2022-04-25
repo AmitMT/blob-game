@@ -3,6 +3,8 @@ package com.example.libgdx_try.game_object;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 
+import androidx.annotation.NonNull;
+
 import com.example.libgdx_try.GameLoop;
 import com.example.libgdx_try.graphics.Sprite;
 
@@ -38,6 +40,34 @@ public class Blob extends CircleObject {
 		velocity.set(velocity.x * (1 - FRICTION), velocity.y * (1 - FRICTION));
 	}
 
+	public Sprite getSprite() {
+		return sprite;
+	}
+
+	public void setSprite(Sprite sprite) {
+		this.sprite = sprite;
+	}
+
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Blob cloned = (Blob) super.clone();
+		if (cloned.sprite != null) cloned.sprite = (Sprite) cloned.sprite.clone();
+		return cloned;
+	}
+
+	@Override
+	public String getAttributes() {
+		return super.getAttributes() +
+			" sprite=" + sprite;
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "Blob {" + getAttributes() + " }";
+	}
+
 	public static class Options extends CircleObject.Options {
 
 		protected Sprite sprite;
@@ -52,6 +82,14 @@ public class Blob extends CircleObject {
 		public Options setSprite(Sprite sprite) {
 			this.sprite = sprite;
 			return this;
+		}
+
+		@NonNull
+		@Override
+		public Object clone() throws CloneNotSupportedException {
+			Options cloned = (Options) super.clone();
+			if (cloned.sprite != null) cloned.sprite = (Sprite) cloned.sprite.clone();
+			return cloned;
 		}
 	}
 }

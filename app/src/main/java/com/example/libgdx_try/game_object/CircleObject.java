@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+import androidx.annotation.NonNull;
+
 public class CircleObject extends GameObject {
 
 	protected float radius;
@@ -32,9 +34,12 @@ public class CircleObject extends GameObject {
 
 	@Override
 	public void draw(Canvas canvas) {
-		if (paint != null) canvas.drawCircle(position.x, position.y, radius, paint);
+		if (paint != null)
+			if (borderPaint != null)
+				canvas.drawCircle(position.x, position.y, radius - borderPaint.getStrokeWidth() + 0.5f, paint);
+			else canvas.drawCircle(position.x, position.y, radius, paint);
 		if (borderPaint != null)
-			canvas.drawCircle(position.x, position.y, radius - borderPaint.getStrokeWidth() / 2 + 1, borderPaint);
+			canvas.drawCircle(position.x, position.y, radius - borderPaint.getStrokeWidth() / 2, borderPaint);
 	}
 
 	public float getRadius() {
@@ -69,6 +74,29 @@ public class CircleObject extends GameObject {
 		this.borderPaint = borderPaint;
 	}
 
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		CircleObject cloned = (CircleObject) super.clone();
+		if (cloned.paint != null) cloned.paint = new Paint(cloned.paint);
+		if (cloned.borderPaint != null) cloned.borderPaint = new Paint(cloned.borderPaint);
+		return cloned;
+	}
+
+	@Override
+	public String getAttributes() {
+		return super.getAttributes() +
+			" radius=" + radius +
+			" paint=" + paint +
+			" borderPaint=" + borderPaint;
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "CircleObject {" + getAttributes() + " }";
+	}
+
 	public static class Options extends GameObject.Options {
 
 		protected Paint paint;
@@ -93,6 +121,15 @@ public class CircleObject extends GameObject {
 		public Options setBorderPaint(Paint borderPaint) {
 			this.borderPaint = borderPaint;
 			return this;
+		}
+
+		@NonNull
+		@Override
+		public Object clone() throws CloneNotSupportedException {
+			Options cloned = (Options) super.clone();
+			if (cloned.paint != null) cloned.paint = new Paint(cloned.paint);
+			if (cloned.borderPaint != null) cloned.paint = new Paint(cloned.borderPaint);
+			return cloned;
 		}
 	}
 }

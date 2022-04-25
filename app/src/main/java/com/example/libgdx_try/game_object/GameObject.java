@@ -4,11 +4,18 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.view.MotionEvent;
 
-public abstract class GameObject {
+import androidx.annotation.NonNull;
+
+import java.util.UUID;
+
+public abstract class GameObject implements Cloneable {
+
 	protected PointF position;
 	protected PointF velocity = new PointF(0, 0);
 	protected PointF acceleration = new PointF(0, 0);
 	protected boolean active = true;
+
+	protected String id = UUID.randomUUID().toString();
 
 	public GameObject(PointF position) {
 		this.position = position;
@@ -19,6 +26,15 @@ public abstract class GameObject {
 		velocity = options.velocity;
 		acceleration = options.acceleration;
 		active = options.active;
+		id = options.id;
+	}
+
+	public GameObject(GameObject that) {
+		position = new PointF(that.position.x, that.position.y);
+		velocity = new PointF(that.velocity.x, that.velocity.y);
+		acceleration = new PointF(that.acceleration.x, that.acceleration.y);
+		active = that.active;
+		id = that.id;
 	}
 
 	public abstract void draw(Canvas canvas);
@@ -65,11 +81,45 @@ public abstract class GameObject {
 		return false;
 	}
 
-	public static class Options {
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		GameObject cloned = (GameObject) super.clone();
+		cloned.position = new PointF(cloned.position.x, cloned.position.y);
+		cloned.velocity = new PointF(cloned.velocity.x, cloned.velocity.y);
+		cloned.acceleration = new PointF(cloned.acceleration.x, cloned.acceleration.y);
+		return cloned;
+	}
+
+	public String getAttributes() {
+		return " position=" + position +
+			" velocity=" + velocity +
+			" acceleration=" + acceleration +
+			" active=" + active +
+			" id='" + id;
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "GameObject {" + getAttributes() + " }";
+	}
+
+	public static class Options implements Cloneable {
 
 		protected PointF velocity = new PointF(0, 0);
 		protected PointF acceleration = new PointF(0, 0);
 		protected boolean active = true;
+
+		protected String id = UUID.randomUUID().toString();
 
 		public Options() {
 		}
@@ -99,6 +149,24 @@ public abstract class GameObject {
 		public Options setActive(boolean active) {
 			this.active = active;
 			return this;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public Options setId(String id) {
+			this.id = id;
+			return this;
+		}
+
+		@NonNull
+		@Override
+		public Object clone() throws CloneNotSupportedException {
+			Options cloned = (Options) super.clone();
+			cloned.velocity = new PointF(cloned.velocity.x, cloned.velocity.y);
+			cloned.acceleration = new PointF(cloned.acceleration.x, cloned.acceleration.y);
+			return cloned;
 		}
 	}
 }

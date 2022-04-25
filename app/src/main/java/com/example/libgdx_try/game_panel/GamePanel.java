@@ -4,7 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.view.MotionEvent;
 
-public abstract class GamePanel {
+import androidx.annotation.NonNull;
+
+public abstract class GamePanel implements Cloneable {
+
 	protected PointF position;
 
 	public GamePanel(PointF position) {
@@ -25,5 +28,17 @@ public abstract class GamePanel {
 
 	public boolean useTouch(MotionEvent event, int action, int index) {
 		return false;
+	}
+
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		GamePanel cloned = (GamePanel) super.clone();
+		if (cloned.position != null)
+			cloned.position = new PointF(cloned.position.x, cloned.position.y);
+		return cloned;
+	}
+
+	public static class Options {
 	}
 }

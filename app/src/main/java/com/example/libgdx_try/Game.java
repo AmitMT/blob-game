@@ -22,6 +22,8 @@ import com.example.libgdx_try.game_object.Tank;
 import com.example.libgdx_try.game_panel.DebugText;
 import com.example.libgdx_try.game_panel.Joystick;
 import com.example.libgdx_try.graphics.CoronaSpriteSheet;
+import com.example.libgdx_try.network.Socket;
+import com.example.libgdx_try.network.TanksHandler;
 
 import java.util.Random;
 
@@ -34,7 +36,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 	CameraShake cameraShake = new CameraShake();
 	Joystick movingJoystick;
 	Joystick lookingJoystick;
-	float scaleFactor = 4;
 	DebugText fpsDebugText;
 	DebugText upsDebugText;
 
@@ -58,12 +59,19 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		Paint playerBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		playerBorderPaint.setStyle(Paint.Style.STROKE);
 		playerBorderPaint.setColor(ContextCompat.getColor(context, R.color.player_border));
-		playerBorderPaint.setStrokeWidth(4);
+		playerBorderPaint.setStrokeWidth(3.5f);
+		Paint barrelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		barrelPaint.setColor(ContextCompat.getColor(context, R.color.barrel));
+		Paint barrelBorderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		barrelBorderPaint.setStyle(Paint.Style.STROKE);
+		barrelBorderPaint.setColor(ContextCompat.getColor(context, R.color.barrel_border));
+		barrelBorderPaint.setStrokeWidth(3.5f);
 
 		Tank.Options playerOptions = (Tank.Options) new Tank.Options()
 			.setBarrelOptions(new Tank.Barrel.Options()
-				.setLength(50)
-				.setThickness(20)
+				.setLength(18)
+				.setThickness(22)
+				.setPaint(barrelPaint)
 			)
 			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
 			.setPaint(playerPaint)
@@ -73,7 +81,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 			30,
 			playerOptions
 		);
-
+		TanksHandler.player = player;
+		Socket.getInstance().setDataSending(true);
 
 		SurfaceHolder surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
@@ -118,21 +127,26 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		movingJoystick.draw(canvas);
 		lookingJoystick.draw(canvas);
 
-		fpsDebugText.setText("FPS: " + gameLoop.getAvgFPS());
+		fpsDebugText.setText("FPS: " + Math.round(gameLoop.getAvgFPS() * 100.0) / 100.0);
 		fpsDebugText.draw(canvas);
 		upsDebugText.draw(canvas);
 	}
 
 	public void drawRelationalToPlayer(Canvas canvas) {
-		for (Blob blob : blobs) {
+		for (Blob blob : blobs)
 			blob.draw(canvas);
+
+		for (Tank enemy : TanksHandler.getEnemies()) {
+			// Tank enemyClone = (Tank) enemy.clone();
+			// Log.i("hi", "" + enemy.equals(enemyClone));
+			enemy.draw(canvas);
 		}
 
 		player.draw(canvas);
 	}
 
 	public void update() {
-		upsDebugText.setText("UPS: " + gameLoop.getAvgUPS());
+		upsDebugText.setText("UPS: " + Math.round(gameLoop.getAvgUPS() * 100.0) / 100.0);
 		cameraShake.update();
 		movingJoystick.update();
 		lookingJoystick.update();
@@ -140,7 +154,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		player.setAcceleration(new PointF(movingJoystick.getActuator().x * Blob.MAX_ACCELERATION, movingJoystick.getActuator().y * Blob.MAX_ACCELERATION));
 		if (lookingJoystick.getActuator().x != 0 && lookingJoystick.getActuator().y != 0)
 			player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
-		if (lookingJoystick.isVisible()) player.shoot(cameraShake);
+		if (lookingJoystick.isVisible()) player.shoot();
 		player.update();
 	}
 

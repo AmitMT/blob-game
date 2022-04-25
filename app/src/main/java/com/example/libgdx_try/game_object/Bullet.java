@@ -3,6 +3,8 @@ package com.example.libgdx_try.game_object;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 
+import androidx.annotation.NonNull;
+
 public class Bullet extends CircleObject {
 
 	int timeToLive = 3000;
@@ -23,6 +25,8 @@ public class Bullet extends CircleObject {
 		velocity = options.velocity;
 		timeToLive = options.timeToLive;
 		disintegrationSpeed = options.disintegrationSpeed;
+		paint = options.paint;
+		borderPaint = options.borderPaint;
 	}
 
 	@Override
@@ -36,8 +40,12 @@ public class Bullet extends CircleObject {
 	@Override
 	public void draw(Canvas canvas) {
 		if (dying) {
-			if (paint.getAlpha() <= 255 * disintegrationSpeed) active = false;
-			else paint.setAlpha(paint.getAlpha() - (int) (255 * disintegrationSpeed));
+			if (paint.getAlpha() <= 255 * disintegrationSpeed && borderPaint.getAlpha() <= 255 * disintegrationSpeed)
+				active = false;
+			else {
+				paint.setAlpha(paint.getAlpha() - (int) (255 * disintegrationSpeed));
+				borderPaint.setAlpha(borderPaint.getAlpha() - (int) (255 * disintegrationSpeed));
+			}
 		}
 
 		super.draw(canvas);
@@ -47,9 +55,31 @@ public class Bullet extends CircleObject {
 		return Math.pow(position.x - circleObject.position.x, 2) + Math.pow(position.x - circleObject.position.x, 2) < Math.pow(radius + circleObject.radius, 2);
 	}
 
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	public String getAttributes() {
+		return super.getAttributes() +
+			" timeToLive=" + timeToLive +
+			" disintegrationSpeed=" + disintegrationSpeed +
+			" timeSinceCreation=" + timeSinceCreation +
+			" dying=" + dying;
+
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "Bullet {" + getAttributes() + " }";
+	}
+
 	public static class Options extends CircleObject.Options {
 
-		protected int timeToLive = 3000;
+		protected int timeToLive = 1500;
 		protected float disintegrationSpeed = 0.05f;
 
 		public Options() {
@@ -71,6 +101,12 @@ public class Bullet extends CircleObject {
 		public Options setDisintegrationSpeed(float disintegrationSpeed) {
 			this.disintegrationSpeed = disintegrationSpeed;
 			return this;
+		}
+
+		@NonNull
+		@Override
+		public Object clone() throws CloneNotSupportedException {
+			return (Options) super.clone();
 		}
 	}
 }

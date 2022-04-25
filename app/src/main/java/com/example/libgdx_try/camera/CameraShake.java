@@ -22,6 +22,7 @@ public class CameraShake {
 	double shake = 0;
 	float damping = 0.01f;
 	float currentNoiseX = 0;
+	float traumaExponent = 1f;
 
 	public CameraShake() {
 	}
@@ -29,7 +30,9 @@ public class CameraShake {
 	public void update() {
 		currentFrame++;
 
-		shake = Math.pow(trauma, 2);
+		if (trauma != 0)
+			shake = Math.pow(trauma, traumaExponent);
+		else shake = 0;
 		if (shake > 0) {
 			currentNoiseX += maxFrequency * trauma;
 			double currentSeed = seed;

@@ -4,10 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-public class Sprite {
+import androidx.annotation.NonNull;
 
-	final Bitmap bitmap;
-	final Rect rect;
+public class Sprite implements Cloneable {
+
+	Bitmap bitmap;
+	Rect rect;
 
 	public Sprite(Bitmap bitmap, Rect rect) {
 		this.bitmap = bitmap;
@@ -24,5 +26,15 @@ public class Sprite {
 
 	public int getHeight() {
 		return rect.height();
+	}
+
+	@NonNull
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		Sprite cloned = (Sprite) super.clone();
+		if (cloned.bitmap != null)
+			cloned.bitmap = cloned.bitmap.copy(cloned.bitmap.getConfig(), true);
+		if (cloned.rect != null) cloned.rect = new Rect(cloned.rect);
+		return cloned;
 	}
 }
