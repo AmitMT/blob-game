@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -21,21 +22,20 @@ import com.example.libgdx_try.game_object.Blob;
 import com.example.libgdx_try.game_object.Tank;
 import com.example.libgdx_try.game_panel.DebugText;
 import com.example.libgdx_try.game_panel.Joystick;
+import com.example.libgdx_try.graphics.Background;
 import com.example.libgdx_try.graphics.CoronaSpriteSheet;
 import com.example.libgdx_try.network.Socket;
 import com.example.libgdx_try.network.TanksHandler;
-
-import java.util.Random;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 	GameLoop gameLoop;
 	Camera camera;
 	Tank player;
-	Blob[] blobs = new Blob[100];
 	CameraShake cameraShake = new CameraShake();
 	Joystick movingJoystick;
 	Joystick lookingJoystick;
+	Background background;
 	DebugText fpsDebugText;
 	DebugText upsDebugText;
 
@@ -53,6 +53,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 			ViewGroup.LayoutParams.MATCH_PARENT
 		));
 		CoronaSpriteSheet coronaSpriteSheet = new CoronaSpriteSheet(context);
+
+		Paint backgroundPaint = new Paint();
+		backgroundPaint.setColor(ContextCompat.getColor(context, R.color.background_lines));
+		backgroundPaint.setStrokeWidth(5);
+		Background.Options backgroundOptions = new Background.Options().setPaint(backgroundPaint);
+		background = new Background(camera, backgroundOptions);
 
 		Paint playerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		playerPaint.setColor(ContextCompat.getColor(context, R.color.player));
@@ -92,21 +98,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		fpsDebugText = new DebugText(new PointF(20, 50), 48, ContextCompat.getColor(context, R.color.FPS_meter));
 		upsDebugText = new DebugText(new PointF(20, 100), 48, ContextCompat.getColor(context, R.color.FPS_meter));
 
-		Random random = new Random();
-		Paint enemyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		enemyPaint.setColor(ContextCompat.getColor(context, R.color.enemy));
-		Blob.Options enemiesOptions = (Blob.Options) new Blob.Options()
-			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 3))
-			.setPaint(enemyPaint);
-		for (int i = 0; i < blobs.length; i++) {
-			blobs[i] = new Blob(new PointF(
-				random.nextInt(1000) - 500,
-				random.nextInt(2000) - 1000),
-				random.nextInt(50) + 20,
-				enemiesOptions
-			);
-		}
-
 		setFocusable(true);
 	}
 
@@ -116,13 +107,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 		canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
 
-		camera.setPosition(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
+		camera.setMiddlePosition(canvas, player.getPosition());
+		Log.e("///", "" + camera.getMiddlePosition());
 
 		camera.transformCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
 		cameraShake.transformCanvas(canvas, player.getPosition());
 		drawRelationalToPlayer(canvas);
 		cameraShake.revertCanvas(canvas, player.getPosition());
-		camera.revertCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
+		camera.revertCanvas(canvas);
 
 		movingJoystick.draw(canvas);
 		lookingJoystick.draw(canvas);
@@ -133,14 +125,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void drawRelationalToPlayer(Canvas canvas) {
-		for (Blob blob : blobs)
-			blob.draw(canvas);
+		background.draw(canvas, camera);
 
-		for (Tank enemy : TanksHandler.getEnemies()) {
-			// Tank enemyClone = (Tank) enemy.clone();
-			// Log.i("hi", "" + enemy.equals(enemyClone));
+		for (Tank enemy : TanksHandler.getEnemies())
 			enemy.draw(canvas);
-		}
 
 		player.draw(canvas);
 	}
@@ -156,6 +144,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 			player.lerpToAngle((float) (Math.atan2(lookingJoystick.getActuator().y, lookingJoystick.getActuator().x) * 180 / Math.PI), 0.15f);
 		if (lookingJoystick.isVisible()) player.shoot();
 		player.update();
+
+		for (Tank enemy : TanksHandler.getEnemies())
+			enemy.update();
 	}
 
 	@Override
@@ -189,7 +180,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(@NonNull SurfaceHolder holder) {
-		camera = new Camera(new PointF(getWidth() / 2f - player.getPosition().x, getHeight() / 2f - player.getPosition().y));
+		camera = new Camera(
+			player.getPosition(),
+			new PointF(
+				getWidth() / 2f - player.getPosition().x,
+				getHeight() / 2f - player.getPosition().y
+			)
+		);
 		movingJoystick = new Joystick(100, 50);
 		lookingJoystick = new Joystick(100, 50);
 		cameraPos.set(getWidth() / 2f, getHeight() / 2f);

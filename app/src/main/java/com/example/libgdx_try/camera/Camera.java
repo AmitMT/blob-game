@@ -7,7 +7,8 @@ import com.example.libgdx_try.utils.Utils;
 
 public class Camera {
 
-	PointF position;
+	PointF transformVector;
+	PointF middlePosition;
 	float scaleFactor = 4f;
 	boolean smoothFollow = true;
 	float followRoughness = 0.05f; // 0 - 1
@@ -15,38 +16,55 @@ public class Camera {
 	PointF lastFramePosition = new PointF();
 	PointF lastPlayerPosition = new PointF();
 
-	public Camera(PointF position) {
-		this.position = position;
+	public Camera(PointF middlePosition, PointF transformVector) {
+		this.middlePosition = new PointF(middlePosition.x, middlePosition.y);
+		this.transformVector = new PointF(transformVector.x, transformVector.y);
 	}
 
-	public Camera(PointF position, Options options) {
-		this.position = position;
+	public Camera(PointF middlePosition, PointF transformVector, Options options) {
+		this.middlePosition = new PointF(middlePosition.x, middlePosition.y);
+		this.transformVector = new PointF(transformVector.x, transformVector.y);
 
 		smoothFollow = options.smoothFollow;
 		followRoughness = options.followRoughness;
 	}
 
 	public void transformCanvas(Canvas canvas, PointF playerPosition) {
-		lastFramePosition.set(position);
+		lastFramePosition.set(transformVector);
 		lastPlayerPosition.set(playerPosition);
 		canvas.translate(lastFramePosition.x, lastFramePosition.y);
 		canvas.scale(scaleFactor, scaleFactor, lastPlayerPosition.x, lastPlayerPosition.y);
 	}
 
-	public void revertCanvas(Canvas canvas, PointF playerPosition) {
+	public void revertCanvas(Canvas canvas) {
 		float scaleFactor = 1f / this.scaleFactor;
 		canvas.scale(scaleFactor, scaleFactor, lastPlayerPosition.x, lastPlayerPosition.y);
 		canvas.translate(-lastFramePosition.x, -lastFramePosition.y);
 	}
 
-	public PointF getPosition() {
-		return position;
+	public PointF getTransformVector() {
+		return transformVector;
 	}
 
-	public void setPosition(PointF position) {
+	public PointF getMiddlePosition() {
+		return middlePosition;
+	}
+
+	public void setMiddlePosition(Canvas canvas, PointF middlePosition) {
 		if (smoothFollow)
-			this.position = Utils.lerp(this.position, position, followRoughness);
-		else this.position = position;
+			this.middlePosition = Utils.lerp(this.middlePosition, middlePosition, followRoughness);
+		else
+			this.middlePosition = new PointF(middlePosition.x, middlePosition.y);
+
+		transformVector = new PointF(canvas.getWidth() / 2f - this.middlePosition.x, canvas.getHeight() / 2f - this.middlePosition.y);
+	}
+
+	public float getScaleFactor() {
+		return scaleFactor;
+	}
+
+	public void setScaleFactor(float scaleFactor) {
+		this.scaleFactor = scaleFactor;
 	}
 
 	public static class Options {

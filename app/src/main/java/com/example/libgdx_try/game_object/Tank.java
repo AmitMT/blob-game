@@ -13,11 +13,8 @@ import com.example.libgdx_try.ContextProvider;
 import com.example.libgdx_try.R;
 import com.example.libgdx_try.game_panel.HealthBar;
 import com.example.libgdx_try.game_panel.Text;
-import com.example.libgdx_try.network.TanksHandler;
 import com.example.libgdx_try.utils.Utils;
 import com.github.javafaker.Faker;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +66,7 @@ public class Tank extends Blob {
 		name = new Text(new PointF(position.x, position.y - radius * 1.6f), new Faker().name().fullName(), namePaint);
 
 		healthBar = new HealthBar(new PointF(position.x, position.y - radius * 1.6f + 7), 1000);
+		healthBar.setHealth(750);
 
 		id = UUID.randomUUID().toString();
 	}
@@ -135,8 +133,6 @@ public class Tank extends Blob {
 		name.setPosition(new PointF(position.x, position.y - radius * 1.6f));
 		healthBar.setPosition(new PointF(position.x, position.y - radius * 1.6f + 7));
 
-		healthBar.changeHealth(-1);
-
 		animateRecoil();
 	}
 
@@ -202,12 +198,6 @@ public class Tank extends Blob {
 			};
 			barrel.rotationMatrix.mapPoints(points);
 			velocity.offset(points[0], points[1]);
-
-			try {
-				TanksHandler.playerToJSON();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

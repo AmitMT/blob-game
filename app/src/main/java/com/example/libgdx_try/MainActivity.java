@@ -8,6 +8,8 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.libgdx_try.network.Socket;
+
 public class MainActivity extends AppCompatActivity {
 
 	final PermissionManager permissionManager = new PermissionManager(this);
@@ -62,12 +64,14 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onResume() {
+		Socket.getInstance().startSocket();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
 		game.pause();
+		Socket.getInstance().stopSocket();
 		super.onPause();
 	}
 

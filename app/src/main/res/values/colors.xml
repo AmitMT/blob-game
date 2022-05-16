@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="background">#313131</color>
+	<color name="background">#222</color>
 	<color name="foreground">#4E4E4E</color>
 	<color name="foreground_opacity">#CC4E4E4E</color>
 	<color name="shadow">#80171717</color>
@@ -8,9 +8,11 @@
 	<color name="player_border">#0085a8</color>
 	<color name="barrel">#999999</color>
 	<color name="barrel_border">#727272</color>
-	<color name="enemy">#88FFFFFF</color>
+	<color name="enemy">#A31C0A</color>
+	<color name="enemy_border">#7C1F07</color>
 	<color name="FPS_meter">#FF09FF</color>
 	<color name="title">#D3D8E3</color>
 	<color name="text">#A1A9B8</color>
 	<color name="health">#39B63F</color>
+	<color name="background_lines">#3888</color>
 </resources>
