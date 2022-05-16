@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -108,7 +107,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		canvas.drawColor(ContextCompat.getColor(getContext(), R.color.background));
 
 		camera.setMiddlePosition(canvas, player.getPosition());
-		Log.e("///", "" + camera.getMiddlePosition());
 
 		camera.transformCanvas(canvas, new PointF(player.getPosition().x, player.getPosition().y));
 		cameraShake.transformCanvas(canvas, player.getPosition());

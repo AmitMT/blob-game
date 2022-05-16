@@ -2,14 +2,17 @@ package com.example.libgdx_try.network;
 
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.libgdx_try.ContextProvider;
 import com.example.libgdx_try.R;
+import com.example.libgdx_try.game_object.Bullet;
 import com.example.libgdx_try.game_object.Tank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +43,21 @@ public class TanksHandler {
 	}
 
 	public static String getPlayerStatus() {
+		StringBuilder bulletsString = new StringBuilder();
+		// synchronized (player.getBullets()) {
+		for (int i = 0; i < player.getBullets().size(); i++) {
+			Bullet bullet = player.getBullets().get(i);
+			if (i != 0) bulletsString.append("\t");
+			bulletsString
+				.append("id= ").append(bullet.getId())
+				.append(" & x= ").append(bullet.getPosition().x)
+				.append(" & y= ").append(bullet.getPosition().y)
+				.append(" & radius= ").append(bullet.getRadius())
+				.append(" & velocityX= ").append(bullet.getVelocity().x)
+				.append(" & velocityY= ").append(bullet.getVelocity().y);
+		}
+		// }
+
 		return "id: " + player.getId() +
 			"\nx: " + player.getPosition().x +
 			"\ny: " + player.getPosition().y +
@@ -47,7 +65,9 @@ public class TanksHandler {
 			"\nvelocityX: " + player.getVelocity().x +
 			"\nvelocityY: " + player.getVelocity().y +
 			"\naccelerationX: " + player.getAcceleration().x +
-			"\naccelerationY: " + player.getAcceleration().y;
+			"\naccelerationY: " + player.getAcceleration().y +
+			"\nangle: " + player.getAngle() +
+			"\nbullets: " + bulletsString;
 	}
 
 	public static void setTanks(String[] tankStrings) {
@@ -64,8 +84,11 @@ public class TanksHandler {
 		for (String tankString : tankStrings)
 			tanksProperties.add(getPropertiesFromStatusString(tankString));
 
+
 		boolean[] enemyUpdated = new boolean[enemies.size()];
 		for (HashMap<String, String> tankProperties : tanksProperties) {
+			ArrayList<HashMap<String, String>> bulletsProperties = getBulletsFromProperties(tankProperties);
+
 			if (!player.getId().equals(tankProperties.get("id"))) {
 				boolean foundExistingTank = false;
 				int index = 0;
@@ -90,6 +113,34 @@ public class TanksHandler {
 								Float.parseFloat(Objects.requireNonNull(tankProperties.get("accelerationY")))
 							)
 						);
+						enemy.setAngle(Float.parseFloat(Objects.requireNonNull(tankProperties.get("angle"))));
+
+						ArrayList<Bullet> bullets = new ArrayList<>();
+						Paint bulletBorderPaint = new Paint(enemy.getBorderPaint());
+						bulletBorderPaint.setStrokeWidth(3);
+						Bullet.Options bulletOptions = (Bullet.Options) new Bullet.Options()
+							.setPaint(new Paint(enemy.getPaint()))
+							.setBorderPaint(bulletBorderPaint);
+
+						for (HashMap<String, String> bulletProperties : bulletsProperties) {
+							Bullet bullet = new Bullet(
+								new PointF(
+									Float.parseFloat(Objects.requireNonNull(bulletProperties.get("x"))),
+									Float.parseFloat(Objects.requireNonNull(bulletProperties.get("y")))
+								),
+								Float.parseFloat(Objects.requireNonNull(bulletProperties.get("radius"))),
+								bulletOptions
+							);
+							bullet.setVelocity(
+								new PointF(
+									Float.parseFloat(Objects.requireNonNull(bulletProperties.get("velocityX"))),
+									Float.parseFloat(Objects.requireNonNull(bulletProperties.get("velocityY")))
+								)
+							);
+							bullets.add(bullet);
+						}
+						enemy.setBullets(bullets);
+
 						foundExistingTank = true;
 						enemyUpdated[index] = true;
 						break;
@@ -138,8 +189,36 @@ public class TanksHandler {
 		String[] properties = status.split("\n");
 		for (String property : properties) {
 			String[] keyAndValue = property.split(": ");
+			if (keyAndValue.length == 1) keyAndValue = new String[] { keyAndValue[0], "" };
+			Log.e("keyAndValue", Arrays.toString(keyAndValue));
 			tankProperties.put(keyAndValue[0], keyAndValue[1]);
 		}
 		return tankProperties;
+	}
+
+	public static ArrayList<HashMap<String, String>> getBulletsFromProperties(HashMap<String, String> tankProperties) {
+		String bulletsString = tankProperties.get("bullets");
+		if (bulletsString == null) return new ArrayList<>();
+		String[] bulletsStrings = bulletsString.split("\t");
+		if (bulletsStrings.length == 1 && Objects.equals(bulletsStrings[0], ""))
+			bulletsStrings = new String[0];
+		Log.i("bulletsStrings", bulletsStrings.length + Arrays.toString(bulletsStrings));
+		ArrayList<HashMap<String, String>> bulletsProperties = new ArrayList<>();
+		for (int i = 0; i < bulletsStrings.length; i++) {
+			bulletsProperties.add(i, getPropertiesFromBulletString(bulletsStrings[i]));
+		}
+		return bulletsProperties;
+	}
+
+	public static HashMap<String, String> getPropertiesFromBulletString(String bulletString) {
+		HashMap<String, String> bulletProperties = new HashMap<>();
+		String[] properties = bulletString.split(" & ");
+		if (properties.length == 1 && Objects.equals(properties[0], "")) properties = new String[0];
+		Log.i("properties", properties.length + Arrays.toString(properties));
+		for (String property : properties) {
+			String[] keyAndValue = property.split("= ");
+			bulletProperties.put(keyAndValue[0], keyAndValue[1]);
+		}
+		return bulletProperties;
 	}
 }

@@ -75,6 +75,7 @@ public class Socket {
 
 			while (connectionActive) {
 				if (dataSending) socket.emit("update-tank-data", TanksHandler.getPlayerStatus());
+				if (dataSending) Log.i("aaa", TanksHandler.getPlayerStatus());
 				try {
 					sleep(30);
 				} catch (InterruptedException e) {
