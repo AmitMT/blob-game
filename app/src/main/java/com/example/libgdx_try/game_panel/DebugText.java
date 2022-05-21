@@ -6,7 +6,7 @@ import android.graphics.PointF;
 
 public class DebugText extends GamePanel {
 
-	String text;
+	String text = "";
 	Paint paint;
 
 	public DebugText(PointF position, float fontSize, int color) {

@@ -2,7 +2,6 @@ package com.example.libgdx_try.network;
 
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -12,7 +11,6 @@ import com.example.libgdx_try.game_object.Bullet;
 import com.example.libgdx_try.game_object.Tank;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +42,6 @@ public class TanksHandler {
 
 	public static String getPlayerStatus() {
 		StringBuilder bulletsString = new StringBuilder();
-		// synchronized (player.getBullets()) {
 		for (int i = 0; i < player.getBullets().size(); i++) {
 			Bullet bullet = player.getBullets().get(i);
 			if (i != 0) bulletsString.append("\t");
@@ -56,7 +53,6 @@ public class TanksHandler {
 				.append(" & velocityX= ").append(bullet.getVelocity().x)
 				.append(" & velocityY= ").append(bullet.getVelocity().y);
 		}
-		// }
 
 		return "id: " + player.getId() +
 			"\nx: " + player.getPosition().x +
@@ -67,7 +63,11 @@ public class TanksHandler {
 			"\naccelerationX: " + player.getAcceleration().x +
 			"\naccelerationY: " + player.getAcceleration().y +
 			"\nangle: " + player.getAngle() +
-			"\nbullets: " + bulletsString;
+			"\nbullets: " + bulletsString +
+			"\nhealth: " + player.getHealthBar().getHealth() +
+			"\nmaxHealth: " + player.getHealthBar().getMaxHealth() +
+			"\nhealthFractionAnimated: " + player.getHealthBar().getHealthFractionAnimated()+
+			"\nname: " + player.getName();
 	}
 
 	public static void setTanks(String[] tankStrings) {
@@ -141,6 +141,12 @@ public class TanksHandler {
 						}
 						enemy.setBullets(bullets);
 
+						enemy.getHealthBar().setMaxHealth(Float.parseFloat(Objects.requireNonNull(tankProperties.get("maxHealth"))));
+						enemy.getHealthBar().setHealth(Float.parseFloat(Objects.requireNonNull(tankProperties.get("health"))));
+						enemy.getHealthBar().setHealthFractionAnimated(Float.parseFloat(Objects.requireNonNull(tankProperties.get("healthFractionAnimated"))));
+
+						enemy.setName(Objects.requireNonNull(tankProperties.get("name")));
+
 						foundExistingTank = true;
 						enemyUpdated[index] = true;
 						break;
@@ -190,7 +196,6 @@ public class TanksHandler {
 		for (String property : properties) {
 			String[] keyAndValue = property.split(": ");
 			if (keyAndValue.length == 1) keyAndValue = new String[] { keyAndValue[0], "" };
-			Log.e("keyAndValue", Arrays.toString(keyAndValue));
 			tankProperties.put(keyAndValue[0], keyAndValue[1]);
 		}
 		return tankProperties;
@@ -202,7 +207,6 @@ public class TanksHandler {
 		String[] bulletsStrings = bulletsString.split("\t");
 		if (bulletsStrings.length == 1 && Objects.equals(bulletsStrings[0], ""))
 			bulletsStrings = new String[0];
-		Log.i("bulletsStrings", bulletsStrings.length + Arrays.toString(bulletsStrings));
 		ArrayList<HashMap<String, String>> bulletsProperties = new ArrayList<>();
 		for (int i = 0; i < bulletsStrings.length; i++) {
 			bulletsProperties.add(i, getPropertiesFromBulletString(bulletsStrings[i]));
@@ -214,7 +218,6 @@ public class TanksHandler {
 		HashMap<String, String> bulletProperties = new HashMap<>();
 		String[] properties = bulletString.split(" & ");
 		if (properties.length == 1 && Objects.equals(properties[0], "")) properties = new String[0];
-		Log.i("properties", properties.length + Arrays.toString(properties));
 		for (String property : properties) {
 			String[] keyAndValue = property.split("= ");
 			bulletProperties.put(keyAndValue[0], keyAndValue[1]);

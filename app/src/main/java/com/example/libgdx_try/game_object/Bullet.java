@@ -5,11 +5,18 @@ import android.graphics.PointF;
 
 import androidx.annotation.NonNull;
 
+import com.example.libgdx_try.network.Socket;
+import com.example.libgdx_try.network.TanksHandler;
+import com.example.libgdx_try.utils.Collision;
+
+import java.util.List;
+
 public class Bullet extends CircleObject {
 
 	int timeToLive = 3000;
 	float disintegrationSpeed = 0.05f; // slow - 0 < x < 1 - fast
 	long timeSinceCreation;
+	float damage = 100;
 	boolean dying;
 
 	public Bullet(PointF position, float radius) {
@@ -35,6 +42,16 @@ public class Bullet extends CircleObject {
 		super.update();
 
 		if (System.currentTimeMillis() > timeSinceCreation + timeToLive) dying = true;
+
+		if (!dying) {
+			List<Tank> enemies = TanksHandler.getEnemies();
+			for (Tank enemy : enemies)
+				if (Collision.circleCircle(this, enemy)) {
+					Socket.getInstance().getSocket().emit("hit", enemy.id, String.valueOf(damage));
+					enemy.getHealthBar().changeHealth(-damage);
+					dying = true;
+				}
+		}
 	}
 
 	@Override
@@ -45,14 +62,19 @@ public class Bullet extends CircleObject {
 			else {
 				paint.setAlpha(paint.getAlpha() - (int) (255 * disintegrationSpeed));
 				borderPaint.setAlpha(borderPaint.getAlpha() - (int) (255 * disintegrationSpeed));
+				// radius *= 1 - disintegrationSpeed;
 			}
 		}
 
 		super.draw(canvas);
 	}
 
-	public boolean collision(CircleObject circleObject) {
-		return Math.pow(position.x - circleObject.position.x, 2) + Math.pow(position.x - circleObject.position.x, 2) < Math.pow(radius + circleObject.radius, 2);
+	public float getDamage() {
+		return damage;
+	}
+
+	public void setDamage(float damage) {
+		this.damage = damage;
 	}
 
 	@NonNull
@@ -81,6 +103,7 @@ public class Bullet extends CircleObject {
 
 		protected int timeToLive = 1500;
 		protected float disintegrationSpeed = 0.05f;
+		protected float damage = 100;
 
 		public Options() {
 		}
@@ -100,6 +123,15 @@ public class Bullet extends CircleObject {
 
 		public Options setDisintegrationSpeed(float disintegrationSpeed) {
 			this.disintegrationSpeed = disintegrationSpeed;
+			return this;
+		}
+
+		public float getDamage() {
+			return damage;
+		}
+
+		public Options setDamage(float damage) {
+			this.damage = damage;
 			return this;
 		}
 

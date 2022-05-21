@@ -8,6 +8,8 @@ import android.graphics.PointF;
 
 import androidx.annotation.NonNull;
 
+import com.example.libgdx_try.utils.Utils;
+
 public class HealthBar extends GamePanel {
 
 	float maxHealth;
@@ -16,6 +18,7 @@ public class HealthBar extends GamePanel {
 	PointF size = new PointF(60, 4);
 
 	float healthFraction;
+	float healthFractionAnimated;
 
 	Paint backgroundPaint = new Paint();
 	Paint healthPaint = new Paint();
@@ -33,6 +36,7 @@ public class HealthBar extends GamePanel {
 		this.maxHealth = maxHealth;
 		health = maxHealth;
 		healthFraction = 1;
+		healthFractionAnimated = healthFraction;
 	}
 
 	public HealthBar(PointF position, float maxHealth, Options options) {
@@ -42,6 +46,7 @@ public class HealthBar extends GamePanel {
 		health = options.health;
 		size = options.size;
 		healthFraction = health / maxHealth;
+		healthFractionAnimated = healthFraction;
 	}
 
 	@Override
@@ -49,18 +54,22 @@ public class HealthBar extends GamePanel {
 		Path path = new Path();
 		path.addRoundRect(position.x - size.x / 2, position.y - size.y / 2, position.x + size.x / 2, position.y + size.y / 2, 2, 2, Path.Direction.CW);
 		canvas.drawPath(path, backgroundPaint);
-		path.reset();
-		path.addRoundRect(position.x - size.x / 2, position.y - size.y / 2, position.x + (healthFraction - 0.5f) * size.x, position.y + size.y / 2, 2, 2, Path.Direction.CW);
-		canvas.drawPath(path, healthPaint);
+		if (healthFractionAnimated > 0) {
+			path.reset();
+			path.addRoundRect(position.x - size.x / 2, position.y - size.y / 2, position.x + (healthFractionAnimated - 0.5f) * size.x, position.y + size.y / 2, 2, 2, Path.Direction.CW);
+			canvas.drawPath(path, healthPaint);
+		}
 	}
 
 	@Override
 	public void update() {
+		healthFractionAnimated = Utils.lerp(healthFraction, healthFractionAnimated, 0.9f);
 	}
 
 	public void changeHealth(float health) {
 		this.health += health;
-		setHealth(Math.min(Math.max(0, this.health), maxHealth));
+		this.health = Math.min(Math.max(0, this.health), maxHealth);
+		setHealth(this.health);
 	}
 
 	public float getMaxHealth() {
@@ -79,6 +88,14 @@ public class HealthBar extends GamePanel {
 	public void setHealth(float health) {
 		this.health = health;
 		healthFraction = health / maxHealth;
+	}
+
+	public float getHealthFractionAnimated() {
+		return healthFractionAnimated;
+	}
+
+	public void setHealthFractionAnimated(float healthFractionAnimated) {
+		this.healthFractionAnimated = healthFractionAnimated;
 	}
 
 	@NonNull

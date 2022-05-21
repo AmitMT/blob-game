@@ -3,6 +3,8 @@ package com.example.libgdx_try.network;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.libgdx_try.Game;
+
 import java.net.URISyntaxException;
 import java.util.Collections;
 
@@ -73,9 +75,14 @@ public class Socket {
 				TanksHandler.setTanks(tankStrings);
 			});
 
+			socket.on("you-got-hit", args -> {
+				float damage = Float.parseFloat((String) args[0]);
+				TanksHandler.player.getHealthBar().changeHealth(-damage);
+				Game.cameraShake.increaseTrauma(damage / TanksHandler.player.getHealthBar().getMaxHealth() * 5);
+			});
+
 			while (connectionActive) {
 				if (dataSending) socket.emit("update-tank-data", TanksHandler.getPlayerStatus());
-				if (dataSending) Log.i("aaa", TanksHandler.getPlayerStatus());
 				try {
 					sleep(30);
 				} catch (InterruptedException e) {

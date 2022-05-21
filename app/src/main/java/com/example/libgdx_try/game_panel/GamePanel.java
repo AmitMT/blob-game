@@ -39,6 +39,7 @@ public abstract class GamePanel implements Cloneable {
 		return cloned;
 	}
 
+
 	public static class Options {
 	}
 }

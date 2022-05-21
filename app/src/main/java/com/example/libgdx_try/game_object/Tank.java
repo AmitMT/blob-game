@@ -10,9 +10,12 @@ import android.graphics.PointF;
 import androidx.annotation.NonNull;
 
 import com.example.libgdx_try.ContextProvider;
+import com.example.libgdx_try.Game;
 import com.example.libgdx_try.R;
 import com.example.libgdx_try.game_panel.HealthBar;
 import com.example.libgdx_try.game_panel.Text;
+import com.example.libgdx_try.network.TanksHandler;
+import com.example.libgdx_try.utils.Collision;
 import com.example.libgdx_try.utils.Utils;
 import com.github.javafaker.Faker;
 
@@ -36,6 +39,8 @@ public class Tank extends Blob {
 	boolean hasRecoil = false;
 	int maxRecoilAnimationTime = 400;
 	int recoiledBarrelLength;
+
+	float bodyDamage = 10;
 
 	Text name;
 
@@ -66,7 +71,6 @@ public class Tank extends Blob {
 		name = new Text(new PointF(position.x, position.y - radius * 1.6f), new Faker().name().fullName(), namePaint);
 
 		healthBar = new HealthBar(new PointF(position.x, position.y - radius * 1.6f + 7), 1000);
-		healthBar.setHealth(750);
 
 		id = UUID.randomUUID().toString();
 	}
@@ -133,7 +137,18 @@ public class Tank extends Blob {
 		name.setPosition(new PointF(position.x, position.y - radius * 1.6f));
 		healthBar.setPosition(new PointF(position.x, position.y - radius * 1.6f + 7));
 
+		healthBar.update();
+
 		animateRecoil();
+
+		if (TanksHandler.player == this) {
+			List<Tank> enemies = TanksHandler.getEnemies();
+			for (Tank enemy : enemies)
+				if (Collision.circleCircle(this, enemy)) {
+					getHealthBar().changeHealth(-enemy.getBodyDamage());
+					Game.cameraShake.increaseTrauma(enemy.getBodyDamage() / TanksHandler.player.getHealthBar().getMaxHealth() * 5);
+				}
+		}
 	}
 
 	public float getAngle() {
@@ -154,6 +169,26 @@ public class Tank extends Blob {
 
 	public String getName() {
 		return name.getText();
+	}
+
+	public void setName(String name) {
+		this.name.setText(name);
+	}
+
+	public HealthBar getHealthBar() {
+		return healthBar;
+	}
+
+	public void setHealthBar(HealthBar healthBar) {
+		this.healthBar = healthBar;
+	}
+
+	public float getBodyDamage() {
+		return bodyDamage;
+	}
+
+	public void setBodyDamage(float bodyDamage) {
+		this.bodyDamage = bodyDamage;
 	}
 
 	public void lerpToAngle(float angle, float speed) {

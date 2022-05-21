@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -26,15 +27,20 @@ import com.example.libgdx_try.graphics.CoronaSpriteSheet;
 import com.example.libgdx_try.network.Socket;
 import com.example.libgdx_try.network.TanksHandler;
 
+import java.util.Random;
+
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
+	public static CameraShake cameraShake = new CameraShake();
 	GameLoop gameLoop;
 	Camera camera;
 	Tank player;
-	CameraShake cameraShake = new CameraShake();
 	Joystick movingJoystick;
 	Joystick lookingJoystick;
 	Background background;
+
+	DebugText positionText;
+
 	DebugText fpsDebugText;
 	DebugText upsDebugText;
 
@@ -81,8 +87,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 			.setSprite(coronaSpriteSheet.getSpriteByIndex(0, 0))
 			.setPaint(playerPaint)
 			.setBorderPaint(playerBorderPaint);
+
+		Random random = new Random();
 		player = new Tank(
-			new PointF(0, 0),
+			new PointF(random.nextInt(10000) - 5000, random.nextInt(10000) - 5000),
 			30,
 			playerOptions
 		);
@@ -90,7 +98,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		Socket.getInstance().setDataSending(true);
 
 		SurfaceHolder surfaceHolder = getHolder();
+		Log.i("hi", "a" + surfaceHolder);
 		surfaceHolder.addCallback(this);
+
 
 		gameLoop = new GameLoop(this, surfaceHolder);
 
@@ -117,6 +127,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		movingJoystick.draw(canvas);
 		lookingJoystick.draw(canvas);
 
+		positionText.draw(canvas);
+
 		fpsDebugText.setText("FPS: " + Math.round(gameLoop.getAvgFPS() * 100.0) / 100.0);
 		fpsDebugText.draw(canvas);
 		upsDebugText.draw(canvas);
@@ -132,6 +144,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void update() {
+		positionText.setText("X: " + ((int) player.getPosition().x) / 10 + " Y: " + ((int) player.getPosition().y) / 10);
 		upsDebugText.setText("UPS: " + Math.round(gameLoop.getAvgUPS() * 100.0) / 100.0);
 		cameraShake.update();
 		movingJoystick.update();
@@ -178,6 +191,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(@NonNull SurfaceHolder holder) {
+		Log.i("hi", "surfaceCreated");
 		camera = new Camera(
 			player.getPosition(),
 			new PointF(
@@ -189,6 +203,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		lookingJoystick = new Joystick(100, 50);
 		cameraPos.set(getWidth() / 2f, getHeight() / 2f);
 
+		positionText = new DebugText(
+			new PointF(getWidth() - 400, getHeight() - 30),
+			48,
+			ContextCompat.getColor(ContextProvider.getInstance().context, R.color.text)
+		);
+
 		if (gameLoop.getState().equals(Thread.State.TERMINATED))
 			gameLoop = new GameLoop(this, holder);
 
@@ -197,10 +217,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+		Log.i("hi", "surfaceChanged");
 	}
 
 	@Override
 	public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+		Log.i("hi", "surfaceDestroyed");
 	}
 
 	public void resume() {
