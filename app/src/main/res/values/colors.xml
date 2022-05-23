@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<color name="background">#222</color>
+	<color name="backgroundOpacity">#8222</color>
 	<color name="foreground">#4E4E4E</color>
 	<color name="foreground_opacity">#CC4E4E4E</color>
 	<color name="shadow">#80171717</color>
