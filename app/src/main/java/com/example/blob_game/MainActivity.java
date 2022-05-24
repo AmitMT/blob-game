@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 			String name = ((EditText) findViewById(R.id.name_text)).getText().toString();
 			name = !name.equals("") ? name : null;
 			((Button) findViewById(R.id.start_button)).setText("");
-			((ProgressBar) findViewById(R.id.progress_bar)).setVisibility(ProgressBar.VISIBLE);
+			findViewById(R.id.progress_bar).setVisibility(ProgressBar.VISIBLE);
 
 			SharedPreferences.Editor myEdit = sharedPreferences.edit();
 			myEdit.putString("name", name);
