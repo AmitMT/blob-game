@@ -1,17 +1,13 @@
 package com.example.blob_game.game_panel;
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.blob_game.ContextProvider;
-import com.example.blob_game.MainActivity;
 import com.example.blob_game.utils.Utils;
 
 public class HealthBar extends GamePanel {

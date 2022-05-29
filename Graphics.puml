@@ -1,0 +1,35 @@
+@startuml
+class com.example.blob_game.graphics.Background {
+~ Camera camera
+~ Paint paint
+~ int spaceBetweenLines
++ void draw(Canvas,Camera)
+}
+class com.example.blob_game.graphics.Background.Options {
+~ Paint paint
+~ int spaceBetweenLines
++ Paint getPaint()
++ Options setPaint(Paint)
++ int getSpaceBetweenLines()
++ Options setSpaceBetweenLines(int)
+}
+class com.example.blob_game.graphics.Sprite {
+~ Bitmap bitmap
+~ Rect rect
++ void draw(Canvas,Rect)
++ int getWidth()
++ int getHeight()
++ Object clone()
+}
+class com.example.blob_game.graphics.CoronaSpriteSheet {
+# {static} int spriteWidth
+# {static} int spriteHeight
+# Bitmap bitmap
++ Bitmap getBitmap()
++ Sprite getSpriteByIndex(int,int)
+}
+
+
+com.example.blob_game.graphics.Background +.. com.example.blob_game.graphics.Background.Options
+com.example.blob_game.graphics.Cloneable <|.. com.example.blob_game.graphics.Sprite
+@enduml

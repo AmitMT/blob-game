@@ -1,0 +1,213 @@
+@startuml
+class com.example.blob_game.game_object.Tank {
+~ Barrel barrel
+~ Bullet.Options bulletOptions
+~ ArrayList<Bullet> bullets
+~ int bulletRadius
+~ float bulletSpeed
+~ int reloadMilli
+~ long prevShotTime
+~ float recoil
+~ float barrelRecoilMultiplier
+~ boolean hasRecoil
+~ int maxRecoilAnimationTime
+~ int recoiledBarrelLength
+~ float bodyDamage
+~ Text name
+~ HealthBar healthBar
++ void draw(Canvas)
++ void drawBarrel(Canvas)
++ void update()
++ float getAngle()
++ void setAngle(float)
++ List<Bullet> getBullets()
++ void setBullets(ArrayList<Bullet>)
++ String getName()
++ void setName(String)
++ HealthBar getHealthBar()
++ void setHealthBar(HealthBar)
++ float getBodyDamage()
++ void setBodyDamage(float)
++ void lerpToAngle(float,float)
++ void shoot()
++ void animateRecoil()
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Tank.Options {
+# Barrel.Options barrelOptions
+# Bullet.Options bulletOptions
+# float recoil
+# int reloadMilli
+# float barrelRecoilMultiplier
+# String name
++ Barrel.Options getBarrelOptions()
++ Options setBarrelOptions(Barrel.Options)
++ Bullet.Options getBulletOptions()
++ Options setBulletOptions(Bullet.Options)
++ int getReloadMilli()
++ Options setReloadMilli(int)
++ float getRecoil()
++ Options setRecoil(float)
++ float getBarrelRecoilMultiplier()
++ Options setBarrelRecoilMultiplier(float)
++ String getName()
++ Options setName(String)
+}
+class com.example.blob_game.game_object.Tank.Barrel {
+~ int length
+~ int thickness
+~ float angle
+~ Paint paint
+~ Paint borderPaint
+~ Matrix rotationMatrix
++ Object clone()
+}
+class com.example.blob_game.game_object.Tank.Barrel.Options {
+# int length
+# int thickness
+# float angle
+# Paint paint
+# Paint borderPaint
++ int getLength()
++ Options setLength(int)
++ int getThickness()
++ Options setThickness(int)
++ float getAngle()
++ Options setAngle(float)
++ Paint getPaint()
++ Options setPaint(Paint)
++ Paint getBorderPaint()
++ Options setBorderPaint(Paint)
+}
+abstract class com.example.blob_game.game_object.GameObject {
+# PointF position
+# PointF velocity
+# PointF acceleration
+# boolean active
+# String id
++ {abstract}void draw(Canvas)
++ void update()
++ PointF getPosition()
++ void setPosition(PointF)
++ PointF getVelocity()
++ void setVelocity(PointF)
++ PointF getAcceleration()
++ void setAcceleration(PointF)
++ boolean isActive()
++ void setActive(boolean)
++ boolean useTouch(MotionEvent,int,int)
++ String getId()
++ void setId(String)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.GameObject.Options {
+# PointF velocity
+# PointF acceleration
+# boolean active
+# String id
++ PointF getVelocity()
++ Options setVelocity(PointF)
++ PointF getAcceleration()
++ Options setAcceleration(PointF)
++ boolean isActive()
++ Options setActive(boolean)
++ String getId()
++ Options setId(String)
++ Object clone()
+}
+class com.example.blob_game.game_object.Blob {
++ {static} float MAX_ACCELERATION_IN_SECONDS
++ {static} float MAX_ACCELERATION
++ {static} float FRICTION
+# Sprite sprite
++ void draw(Canvas)
++ void update()
++ Sprite getSprite()
++ void setSprite(Sprite)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Blob.Options {
+# Sprite sprite
++ Sprite getSprite()
++ Options setSprite(Sprite)
++ Object clone()
+}
+class com.example.blob_game.game_object.CircleObject {
+# float radius
+# Paint paint
+# Paint borderPaint
++ void draw(Canvas)
++ float getRadius()
++ void setRadius(float)
++ Paint getPaint()
++ void setPaint(Paint)
++ int getColor()
++ void setColor(int)
++ Paint getBorderPaint()
++ void setBorderPaint(Paint)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.CircleObject.Options {
+# Paint paint
+# Paint borderPaint
++ Paint getPaint()
++ Options setPaint(Paint)
++ Paint getBorderPaint()
++ Options setBorderPaint(Paint)
++ Object clone()
+}
+class com.example.blob_game.game_object.Bullet {
+~ int timeToLive
+~ float disintegrationSpeed
+~ long timeSinceCreation
+~ float damage
+~ boolean dying
++ void update()
++ void draw(Canvas)
++ float getDamage()
++ void setDamage(float)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Bullet.Options {
+# int timeToLive
+# float disintegrationSpeed
+# float damage
++ int getTimeToLive()
++ Options setTimeToLive(int)
++ float getDisintegrationSpeed()
++ Options setDisintegrationSpeed(float)
++ float getDamage()
++ Options setDamage(float)
++ Object clone()
+}
+
+
+com.example.blob_game.game_object.Blob <|-- com.example.blob_game.game_object.Tank
+com.example.blob_game.game_object.Tank +.. com.example.blob_game.game_object.Tank.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Tank.Options
+com.example.blob_game.game_object.Tank +.. com.example.blob_game.game_object.Tank.Barrel
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.Tank.Barrel
+com.example.blob_game.game_object.Tank.Barrel +.. com.example.blob_game.game_object.Tank.Barrel.Options
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.GameObject
+com.example.blob_game.game_object.GameObject +.. com.example.blob_game.game_object.GameObject.Options
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.GameObject.Options
+com.example.blob_game.game_object.CircleObject <|-- com.example.blob_game.game_object.Blob
+com.example.blob_game.game_object.Blob +.. com.example.blob_game.game_object.Blob.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Blob.Options
+com.example.blob_game.game_object.GameObject <|-- com.example.blob_game.game_object.CircleObject
+com.example.blob_game.game_object.CircleObject +.. com.example.blob_game.game_object.CircleObject.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.CircleObject.Options
+com.example.blob_game.game_object.CircleObject <|-- com.example.blob_game.game_object.Bullet
+com.example.blob_game.game_object.Bullet +.. com.example.blob_game.game_object.Bullet.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Bullet.Options
+@enduml

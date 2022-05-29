@@ -1,0 +1,101 @@
+@startuml
+class com.example.blob_game.PermissionManager {
+~ Map<String,PermissionState> permissions
+~ int REQUEST_CODE
+~ Activity context
++ {static} boolean checkPermission(Context,String)
++ {static} boolean checkPermissions(Context,String[])
++ boolean checkPermission(String)
++ void requestPermission(String)
++ boolean checkAllPermissions()
++ void requestAllPermissions()
++ Activity getContext()
++ void setContext(Activity)
++ Map<String,PermissionState> getPermissions()
++ void setPermissions(String[])
++ void setPermissionsResult(int,String[],int[])
++ String toString()
+}
+enum com.example.blob_game.PermissionState {
++  GRANTED
++  DENIED
+- int i
++ {static} PermissionState fromInteger(int)
++ int toInteger()
+}
+class com.example.blob_game.ContextProvider {
+~ {static} ContextProvider contextProvider
+~ Context context
++ {static} ContextProvider getInstance()
++ {static} ContextProvider getInstance(Context)
++ Context getContext()
++ void setContext(Context)
+}
+class com.example.blob_game.GameLoop {
++ {static} float MAX_UPS
++ {static} double UPS_PERIOD
+~ {static} GameLoop gameLoop
+~ SurfaceHolder surfaceHolder
+~ boolean isRunning
+~ Game game
+~ double avgUPS
+~ double avgFPS
++ {static} GameLoop getInstance(Game,SurfaceHolder)
++ {static} GameLoop getInstance()
++ double getAvgUPS()
++ double getAvgFPS()
++ void startLoop()
++ void run()
++ void stopLoop()
+}
+class com.example.blob_game.GameActivity {
++ {static} String name
+~ PermissionManager permissionManager
+~ String[] PERMISSIONS
++ Game game
++ UpgradesPanel upgrades_panel
+# void onCreate(Bundle)
++ void onRequestPermissionsResult(int,String[],int[])
+# void onStart()
+# void onResume()
+# void onPause()
+# void onStop()
+# void onDestroy()
+}
+class com.example.blob_game.ScreenReceiver {
++ void onReceive(Context,Intent)
+}
+class com.example.blob_game.Game {
++ {static} CameraShake cameraShake
+~ GameLoop gameLoop
+~ Camera camera
+~ Tank player
+~ Joystick movingJoystick
+~ Joystick lookingJoystick
+~ Background background
+~ DebugText positionText
+~ DebugText fpsDebugText
+~ DebugText upsDebugText
+~ PointF cameraPos
++ void draw(Canvas)
++ void drawRelationalToPlayer(Canvas)
++ void update()
++ boolean onTouchEvent(MotionEvent)
++ void surfaceCreated(SurfaceHolder)
++ void surfaceChanged(SurfaceHolder,int,int,int)
++ void surfaceDestroyed(SurfaceHolder)
++ void resume()
++ void pause()
+}
+class com.example.blob_game.MainActivity {
+# void onCreate(Bundle)
+}
+
+
+com.example.blob_game.Thread <|-- com.example.blob_game.GameLoop
+androidx.appcompat.app.AppCompatActivity <|-- com.example.blob_game.GameActivity
+android.content.BroadcastReceiver <|-- com.example.blob_game.ScreenReceiver
+com.example.blob_game.Callback <|.. com.example.blob_game.Game
+android.view.SurfaceView <|-- com.example.blob_game.Game
+androidx.appcompat.app.AppCompatActivity <|-- com.example.blob_game.MainActivity
+@enduml

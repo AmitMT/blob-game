@@ -1,0 +1,626 @@
+@startuml
+class com.example.blob_game.camera.Camera {
+~ PointF transformVector
+~ PointF middlePosition
+~ float scaleFactor
+~ boolean smoothFollow
+~ float followRoughness
+~ PointF lastFramePosition
+~ PointF lastPlayerPosition
++ void transformCanvas(Canvas,PointF)
++ void revertCanvas(Canvas)
++ PointF getTransformVector()
++ PointF getMiddlePosition()
++ void setMiddlePosition(Canvas,PointF)
++ float getScaleFactor()
++ void setScaleFactor(float)
+}
+class com.example.blob_game.camera.Camera.Options {
+~ boolean smoothFollow
+~ float followRoughness
++ boolean isSmoothFollow()
++ Options setSmoothFollow(boolean)
++ float getFollowRoughness()
++ Options setFollowRoughness(float)
+}
+abstract class com.example.blob_game.game_object.GameObject {
+# PointF position
+# PointF velocity
+# PointF acceleration
+# boolean active
+# String id
++ {abstract}void draw(Canvas)
++ void update()
++ PointF getPosition()
++ void setPosition(PointF)
++ PointF getVelocity()
++ void setVelocity(PointF)
++ PointF getAcceleration()
++ void setAcceleration(PointF)
++ boolean isActive()
++ void setActive(boolean)
++ boolean useTouch(MotionEvent,int,int)
++ String getId()
++ void setId(String)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.GameObject.Options {
+# PointF velocity
+# PointF acceleration
+# boolean active
+# String id
++ PointF getVelocity()
++ Options setVelocity(PointF)
++ PointF getAcceleration()
++ Options setAcceleration(PointF)
++ boolean isActive()
++ Options setActive(boolean)
++ String getId()
++ Options setId(String)
++ Object clone()
+}
+class com.example.blob_game.game_panel.HealthBar {
+~ float maxHealth
+~ float health
+~ PointF size
+~ float healthFraction
+~ float healthFractionAnimated
+~ Paint backgroundPaint
+~ Paint healthPaint
++ void draw(Canvas)
++ void update()
++ void changeHealth(float)
++ float getMaxHealth()
++ void setMaxHealth(float)
++ float getHealth()
++ void setHealth(float)
++ float getHealthFractionAnimated()
++ void setHealthFractionAnimated(float)
++ Object clone()
+}
+class com.example.blob_game.game_panel.HealthBar.Options {
+# PointF size
+# float health
+# Paint healthPaint
+# Paint backgroundPaint
++ float getHealth()
++ Options setHealth(float)
++ PointF getSize()
++ Options setSize(PointF)
++ Paint getHealthPaint()
++ Options setHealthPaint(Paint)
++ Paint getBackgroundPaint()
++ Options setBackgroundPaint(Paint)
+}
+class com.example.blob_game.GameActivity {
++ {static} String name
+~ PermissionManager permissionManager
+~ String[] PERMISSIONS
++ Game game
++ UpgradesPanel upgrades_panel
+# void onCreate(Bundle)
++ void onRequestPermissionsResult(int,String[],int[])
+# void onStart()
+# void onResume()
+# void onPause()
+# void onStop()
+# void onDestroy()
+}
+class com.example.blob_game.utils.Collision {
++ {static} boolean circleCircle(CircleObject,CircleObject)
+}
+class com.example.blob_game.game_panel.Text {
+# String text
+# Paint paint
++ void draw(Canvas)
++ void update()
++ String getText()
++ void setText(String)
++ Paint getPaint()
++ void setPaint(Paint)
++ Object clone()
+}
+class com.example.blob_game.game_panel.Text.Options {
+}
+class com.example.blob_game.ui.TextDialog {
+~ TextView titleView
+~ TextView textView
+~ Button button
+~ String title
+~ String text
+~ String buttonText
+# void onCreate(Bundle)
++ void show()
++ String getTitle()
++ void setTitle(String)
++ String getText()
++ void setText(String)
++ String getButtonText()
++ void setButtonText(String)
+}
+class com.example.blob_game.ui.TextDialog.Options {
+~ String title
+~ String text
+~ String buttonText
++ String getTitle()
++ Options setTitle(String)
++ String getText()
++ Options setText(String)
++ String getButtonText()
++ Options setButtonText(String)
+}
+class com.example.blob_game.game_object.Tank {
+~ Barrel barrel
+~ Bullet.Options bulletOptions
+~ ArrayList<Bullet> bullets
+~ int bulletRadius
+~ float bulletSpeed
+~ int reloadMilli
+~ long prevShotTime
+~ float recoil
+~ float barrelRecoilMultiplier
+~ boolean hasRecoil
+~ int maxRecoilAnimationTime
+~ int recoiledBarrelLength
+~ float bodyDamage
+~ Text name
+~ HealthBar healthBar
++ void draw(Canvas)
++ void drawBarrel(Canvas)
++ void update()
++ float getAngle()
++ void setAngle(float)
++ List<Bullet> getBullets()
++ void setBullets(ArrayList<Bullet>)
++ String getName()
++ void setName(String)
++ HealthBar getHealthBar()
++ void setHealthBar(HealthBar)
++ float getBodyDamage()
++ void setBodyDamage(float)
++ void lerpToAngle(float,float)
++ void shoot()
++ void animateRecoil()
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Tank.Options {
+# Barrel.Options barrelOptions
+# Bullet.Options bulletOptions
+# float recoil
+# int reloadMilli
+# float barrelRecoilMultiplier
+# String name
++ Barrel.Options getBarrelOptions()
++ Options setBarrelOptions(Barrel.Options)
++ Bullet.Options getBulletOptions()
++ Options setBulletOptions(Bullet.Options)
++ int getReloadMilli()
++ Options setReloadMilli(int)
++ float getRecoil()
++ Options setRecoil(float)
++ float getBarrelRecoilMultiplier()
++ Options setBarrelRecoilMultiplier(float)
++ String getName()
++ Options setName(String)
+}
+class com.example.blob_game.game_object.Tank.Barrel {
+~ int length
+~ int thickness
+~ float angle
+~ Paint paint
+~ Paint borderPaint
+~ Matrix rotationMatrix
++ Object clone()
+}
+class com.example.blob_game.game_object.Tank.Barrel.Options {
+# int length
+# int thickness
+# float angle
+# Paint paint
+# Paint borderPaint
++ int getLength()
++ Options setLength(int)
++ int getThickness()
++ Options setThickness(int)
++ float getAngle()
++ Options setAngle(float)
++ Paint getPaint()
++ Options setPaint(Paint)
++ Paint getBorderPaint()
++ Options setBorderPaint(Paint)
+}
+class com.example.blob_game.network.Client {
+~ String hostAddress
+~ InputStream inputStream
+~ OutputStream outputStream
+~ Socket socket
++ void run()
+}
+class com.example.blob_game.network.TanksHandler {
++ {static} Tank player
+~ {static} List<Tank> enemies
+~ {static} Paint playerPaint
+~ {static} Paint playerBorderPaint
+~ {static} Paint barrelPaint
+~ {static} Paint barrelBorderPaint
++ {static} String getPlayerStatus()
++ {static} void setTanks(String[])
++ {static} List<Tank> getEnemies()
++ {static} HashMap<String,String> getPropertiesFromStatusString(String)
++ {static} ArrayList<HashMap<String,String>> getBulletsFromProperties(HashMap<String,String>)
++ {static} HashMap<String,String> getPropertiesFromBulletString(String)
+}
+class com.example.blob_game.graphics.CoronaSpriteSheet {
+# {static} int spriteWidth
+# {static} int spriteHeight
+# Bitmap bitmap
++ Bitmap getBitmap()
++ Sprite getSpriteByIndex(int,int)
+}
+class com.example.blob_game.ScreenReceiver {
++ void onReceive(Context,Intent)
+}
+class com.example.blob_game.camera.CameraShake {
+~ PerlinNoise perlinNoise
+~ double seed
+~ double randomSeedAdder
+~ PointF currentShake
+~ PointF lastFrameShake
+~ float maxDisplacement
+~ float maxRotation
+~ float maxFrequency
+~ double currentAngleShake
+~ int currentFrame
+~ double lastFrameAngleShake
+~ double trauma
+~ double shake
+~ float damping
+~ float currentNoiseX
+~ float traumaExponent
++ void update()
++ void transformCanvas(Canvas,PointF)
++ void revertCanvas(Canvas,PointF)
++ void increaseTrauma(float)
+}
+class com.example.blob_game.game_object.CircleObject {
+# float radius
+# Paint paint
+# Paint borderPaint
++ void draw(Canvas)
++ float getRadius()
++ void setRadius(float)
++ Paint getPaint()
++ void setPaint(Paint)
++ int getColor()
++ void setColor(int)
++ Paint getBorderPaint()
++ void setBorderPaint(Paint)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.CircleObject.Options {
+# Paint paint
+# Paint borderPaint
++ Paint getPaint()
++ Options setPaint(Paint)
++ Paint getBorderPaint()
++ Options setBorderPaint(Paint)
++ Object clone()
+}
+class com.example.blob_game.game_panel.UpgradesPanel {
++ {static} String[] upgrades
+~ int upgradePoints
+~ Paint backgroundPaint
+~ UpgradeView[] upgradeViews
++ void addUpgradePoint()
++ void removeUpgradePoint()
++ void open()
++ void close()
+}
+class com.example.blob_game.game_panel.UpgradesPanel.UpgradeView {
+~ int MAX
+~ int progress
+~ LinearLayout progressLayout
+~ void updateProgressLayout(LinearLayout)
+}
+class com.example.blob_game.utils.Utils {
+~ Matrix matrix
++ {static} float convertDpToPixel(float,Context)
++ {static} PointF lerp(PointF,PointF,float)
++ {static} float lerp(float,float,float)
++ {static} int getScreenWidth()
++ {static} int getScreenHeight()
+}
+class com.example.blob_game.game_object.Bullet {
+~ int timeToLive
+~ float disintegrationSpeed
+~ long timeSinceCreation
+~ float damage
+~ boolean dying
++ void update()
++ void draw(Canvas)
++ float getDamage()
++ void setDamage(float)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Bullet.Options {
+# int timeToLive
+# float disintegrationSpeed
+# float damage
++ int getTimeToLive()
++ Options setTimeToLive(int)
++ float getDisintegrationSpeed()
++ Options setDisintegrationSpeed(float)
++ float getDamage()
++ Options setDamage(float)
++ Object clone()
+}
+class com.example.blob_game.PermissionManager {
+~ Map<String,PermissionState> permissions
+~ int REQUEST_CODE
+~ Activity context
++ {static} boolean checkPermission(Context,String)
++ {static} boolean checkPermissions(Context,String[])
++ boolean checkPermission(String)
++ void requestPermission(String)
++ boolean checkAllPermissions()
++ void requestAllPermissions()
++ Activity getContext()
++ void setContext(Activity)
++ Map<String,PermissionState> getPermissions()
++ void setPermissions(String[])
++ void setPermissionsResult(int,String[],int[])
++ String toString()
+}
+enum com.example.blob_game.PermissionState {
++  GRANTED
++  DENIED
+- int i
++ {static} PermissionState fromInteger(int)
++ int toInteger()
+}
+class com.example.blob_game.graphics.Background {
+~ Camera camera
+~ Paint paint
+~ int spaceBetweenLines
++ void draw(Canvas,Camera)
+}
+class com.example.blob_game.graphics.Background.Options {
+~ Paint paint
+~ int spaceBetweenLines
++ Paint getPaint()
++ Options setPaint(Paint)
++ int getSpaceBetweenLines()
++ Options setSpaceBetweenLines(int)
+}
+class com.example.blob_game.Game {
++ {static} CameraShake cameraShake
+~ GameLoop gameLoop
+~ Camera camera
+~ Tank player
+~ Joystick movingJoystick
+~ Joystick lookingJoystick
+~ Background background
+~ DebugText positionText
+~ DebugText fpsDebugText
+~ DebugText upsDebugText
+~ PointF cameraPos
++ void draw(Canvas)
++ void drawRelationalToPlayer(Canvas)
++ void update()
++ boolean onTouchEvent(MotionEvent)
++ void surfaceCreated(SurfaceHolder)
++ void surfaceChanged(SurfaceHolder,int,int,int)
++ void surfaceDestroyed(SurfaceHolder)
++ void resume()
++ void pause()
+}
+class com.example.blob_game.network.Server {
+~ ServerSocket serverSocket
+~ InputStream inputStream
+~ OutputStream outputStream
+~ Socket socket
++ void run()
++ void write(byte[])
+}
+class com.example.blob_game.network.WiFiDirectBroadcastReceiver {
+~ WifiP2pManager manager
+~ WifiP2pManager.Channel channel
+~ MainActivity activity
+~ boolean isDiscoveringPeers
+~ List<WifiP2pDevice> wifiPeers
+~ List<WifiP2pManager.PeerListListener> peerListListeners
++ void onReceive(Context,Intent)
++ void connectToPeer(Context,WifiP2pDevice)
++ boolean isDiscoveringPeers()
++ void setDiscoveringPeers(Context,boolean)
++ List<WifiP2pDevice> getWifiPeers()
++ boolean addPeerListListener(WifiP2pManager.PeerListListener)
++ boolean removePeerListListener(WifiP2pManager.PeerListListener)
+}
+class com.example.blob_game.utils.PerlinNoise {
+- double seed
+- long default_size
+- int[] p
+- void init()
++ double getSeed()
++ void setSeed(double)
++ double noise(double,double,double,int)
++ double noise(double,double,double)
++ double noise(double,double)
++ double noise(double)
++ double smoothNoise(double,double,double)
+- double fade(double)
+- double lerp(double,double,double)
+- double grad(int,double,double,double)
+}
+abstract class com.example.blob_game.game_panel.GamePanel {
+# PointF position
++ {abstract}void draw(Canvas)
++ {abstract}void update()
++ PointF getPosition()
++ void setPosition(PointF)
++ boolean useTouch(MotionEvent,int,int)
++ Object clone()
+}
+class com.example.blob_game.game_panel.GamePanel.Options {
+}
+class com.example.blob_game.ContextProvider {
+~ {static} ContextProvider contextProvider
+~ Context context
++ {static} ContextProvider getInstance()
++ {static} ContextProvider getInstance(Context)
++ Context getContext()
++ void setContext(Context)
+}
+class com.example.blob_game.game_object.Blob {
++ {static} float MAX_ACCELERATION_IN_SECONDS
++ {static} float MAX_ACCELERATION
++ {static} float FRICTION
+# Sprite sprite
++ void draw(Canvas)
++ void update()
++ Sprite getSprite()
++ void setSprite(Sprite)
++ Object clone()
++ String getAttributes()
++ String toString()
+}
+class com.example.blob_game.game_object.Blob.Options {
+# Sprite sprite
++ Sprite getSprite()
++ Options setSprite(Sprite)
++ Object clone()
+}
+class com.example.blob_game.GameLoop {
++ {static} float MAX_UPS
++ {static} double UPS_PERIOD
+~ {static} GameLoop gameLoop
+~ SurfaceHolder surfaceHolder
+~ boolean isRunning
+~ Game game
+~ double avgUPS
+~ double avgFPS
++ {static} GameLoop getInstance(Game,SurfaceHolder)
++ {static} GameLoop getInstance()
++ double getAvgUPS()
++ double getAvgFPS()
++ void startLoop()
++ void run()
++ void stopLoop()
+}
+class com.example.blob_game.network.Socket {
+~ {static} boolean serverPublic
+~ {static} Socket socketHandler
+~ io.socket.client.Socket socket
+~ boolean dataSending
+~ boolean connectionActive
++ {static} Socket getInstance()
++ io.socket.client.Socket getSocket()
++ void setDataSending(boolean)
++ void startSocket()
++ void stopSocket()
+}
+class com.example.blob_game.network.Socket.TankDataSender {
++ void run()
+}
+class com.example.blob_game.game_panel.Joystick {
+~ Point outerCircleCenter
+~ float outerCircleRadius
+~ Point innerCircleCenter
+~ float innerCircleRadius
+~ Paint outerCirclePaintFill
+~ Paint outerCirclePaintStroke
+~ Paint innerCirclePaint
+~ PointF actuator
+~ boolean visible
++ void draw(Canvas)
++ void update()
++ PointF getActuator()
++ void setActuator(PointF)
++ void resetActuator()
++ void setCenter(Point)
++ boolean isVisible()
++ void setVisible(boolean)
++ boolean useTouch(MotionEvent,int,int)
+}
+class com.example.blob_game.graphics.Sprite {
+~ Bitmap bitmap
+~ Rect rect
++ void draw(Canvas,Rect)
++ int getWidth()
++ int getHeight()
++ Object clone()
+}
+class com.example.blob_game.MainActivity {
+# void onCreate(Bundle)
+}
+class com.example.blob_game.ui.Button {
+}
+class com.example.blob_game.game_panel.DebugText {
+~ String text
+~ Paint paint
++ void draw(Canvas)
++ void update()
++ String getText()
++ void setText(String)
++ Paint getPaint()
++ void setPaint(Paint)
+}
+
+
+com.example.blob_game.camera.Camera +.. com.example.blob_game.camera.Camera.Options
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.GameObject
+com.example.blob_game.game_object.GameObject +.. com.example.blob_game.game_object.GameObject.Options
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.GameObject.Options
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.HealthBar
+com.example.blob_game.game_panel.HealthBar +.. com.example.blob_game.game_panel.HealthBar.Options
+com.example.blob_game.game_panel.Options <|-- com.example.blob_game.game_panel.HealthBar.Options
+androidx.appcompat.app.AppCompatActivity <|-- com.example.blob_game.GameActivity
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.Text
+com.example.blob_game.game_panel.Text +.. com.example.blob_game.game_panel.Text.Options
+com.example.blob_game.game_panel.Options <|-- com.example.blob_game.game_panel.Text.Options
+android.app.Dialog <|-- com.example.blob_game.ui.TextDialog
+com.example.blob_game.ui.TextDialog +.. com.example.blob_game.ui.TextDialog.Options
+com.example.blob_game.game_object.Blob <|-- com.example.blob_game.game_object.Tank
+com.example.blob_game.game_object.Tank +.. com.example.blob_game.game_object.Tank.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Tank.Options
+com.example.blob_game.game_object.Tank +.. com.example.blob_game.game_object.Tank.Barrel
+com.example.blob_game.game_object.Cloneable <|.. com.example.blob_game.game_object.Tank.Barrel
+com.example.blob_game.game_object.Tank.Barrel +.. com.example.blob_game.game_object.Tank.Barrel.Options
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Client
+android.content.BroadcastReceiver <|-- com.example.blob_game.ScreenReceiver
+com.example.blob_game.game_object.GameObject <|-- com.example.blob_game.game_object.CircleObject
+com.example.blob_game.game_object.CircleObject +.. com.example.blob_game.game_object.CircleObject.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.CircleObject.Options
+android.widget.LinearLayout <|-- com.example.blob_game.game_panel.UpgradesPanel
+com.example.blob_game.game_panel.UpgradesPanel +.. com.example.blob_game.game_panel.UpgradesPanel.UpgradeView
+com.example.blob_game.game_panel.LinearLayout <|-- com.example.blob_game.game_panel.UpgradesPanel.UpgradeView
+com.example.blob_game.game_object.CircleObject <|-- com.example.blob_game.game_object.Bullet
+com.example.blob_game.game_object.Bullet +.. com.example.blob_game.game_object.Bullet.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Bullet.Options
+com.example.blob_game.graphics.Background +.. com.example.blob_game.graphics.Background.Options
+com.example.blob_game.Callback <|.. com.example.blob_game.Game
+android.view.SurfaceView <|-- com.example.blob_game.Game
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Server
+android.content.BroadcastReceiver <|-- com.example.blob_game.network.WiFiDirectBroadcastReceiver
+com.example.blob_game.game_panel.Cloneable <|.. com.example.blob_game.game_panel.GamePanel
+com.example.blob_game.game_panel.GamePanel +.. com.example.blob_game.game_panel.GamePanel.Options
+com.example.blob_game.game_object.CircleObject <|-- com.example.blob_game.game_object.Blob
+com.example.blob_game.game_object.Blob +.. com.example.blob_game.game_object.Blob.Options
+com.example.blob_game.game_object.Options <|-- com.example.blob_game.game_object.Blob.Options
+com.example.blob_game.Thread <|-- com.example.blob_game.GameLoop
+com.example.blob_game.network.Socket +.. com.example.blob_game.network.Socket.TankDataSender
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Socket.TankDataSender
+com.example.blob_game.graphics.Cloneable <|.. com.example.blob_game.graphics.Sprite
+androidx.appcompat.app.AppCompatActivity <|-- com.example.blob_game.MainActivity
+com.example.blob_game.ui.AppCompatTextView <|-- com.example.blob_game.ui.Button
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.DebugText
+@enduml

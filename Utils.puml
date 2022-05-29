@@ -1,0 +1,29 @@
+@startuml
+class com.example.blob_game.utils.PerlinNoise {
+- double seed
+- long default_size
+- int[] p
+- void init()
++ double getSeed()
++ void setSeed(double)
++ double noise(double,double,double,int)
++ double noise(double,double,double)
++ double noise(double,double)
++ double noise(double)
++ double smoothNoise(double,double,double)
+- double fade(double)
+- double lerp(double,double,double)
+- double grad(int,double,double,double)
+}
+class com.example.blob_game.utils.Collision {
++ {static} boolean circleCircle(CircleObject,CircleObject)
+}
+class com.example.blob_game.utils.Utils {
+~ Matrix matrix
++ {static} float convertDpToPixel(float,Context)
++ {static} PointF lerp(PointF,PointF,float)
++ {static} float lerp(float,float,float)
++ {static} int getScreenWidth()
++ {static} int getScreenHeight()
+}
+@enduml

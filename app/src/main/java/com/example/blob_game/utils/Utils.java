@@ -7,7 +7,6 @@ import android.graphics.PointF;
 import android.util.DisplayMetrics;
 
 public class Utils {
-	Matrix matrix;
 
 	public static float convertDpToPixel(float dp, Context context) {
 		return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
@@ -19,13 +18,5 @@ public class Utils {
 
 	public static float lerp(float num1, float num2, float t) {
 		return num1 + (num2 - num1) * t;
-	}
-
-	public static int getScreenWidth() {
-		return Resources.getSystem().getDisplayMetrics().widthPixels;
-	}
-
-	public static int getScreenHeight() {
-		return Resources.getSystem().getDisplayMetrics().heightPixels;
 	}
 }

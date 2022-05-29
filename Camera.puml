@@ -1,0 +1,51 @@
+@startuml
+class com.example.blob_game.camera.Camera {
+~ PointF transformVector
+~ PointF middlePosition
+~ float scaleFactor
+~ boolean smoothFollow
+~ float followRoughness
+~ PointF lastFramePosition
+~ PointF lastPlayerPosition
++ void transformCanvas(Canvas,PointF)
++ void revertCanvas(Canvas)
++ PointF getTransformVector()
++ PointF getMiddlePosition()
++ void setMiddlePosition(Canvas,PointF)
++ float getScaleFactor()
++ void setScaleFactor(float)
+}
+class com.example.blob_game.camera.Camera.Options {
+~ boolean smoothFollow
+~ float followRoughness
++ boolean isSmoothFollow()
++ Options setSmoothFollow(boolean)
++ float getFollowRoughness()
++ Options setFollowRoughness(float)
+}
+class com.example.blob_game.camera.CameraShake {
+~ PerlinNoise perlinNoise
+~ double seed
+~ double randomSeedAdder
+~ PointF currentShake
+~ PointF lastFrameShake
+~ float maxDisplacement
+~ float maxRotation
+~ float maxFrequency
+~ double currentAngleShake
+~ int currentFrame
+~ double lastFrameAngleShake
+~ double trauma
+~ double shake
+~ float damping
+~ float currentNoiseX
+~ float traumaExponent
++ void update()
++ void transformCanvas(Canvas,PointF)
++ void revertCanvas(Canvas,PointF)
++ void increaseTrauma(float)
+}
+
+
+com.example.blob_game.camera.Camera +.. com.example.blob_game.camera.Camera.Options
+@enduml

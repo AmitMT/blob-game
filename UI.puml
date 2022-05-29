@@ -1,0 +1,36 @@
+@startuml
+class com.example.blob_game.ui.TextDialog {
+~ TextView titleView
+~ TextView textView
+~ Button button
+~ String title
+~ String text
+~ String buttonText
+# void onCreate(Bundle)
++ void show()
++ String getTitle()
++ void setTitle(String)
++ String getText()
++ void setText(String)
++ String getButtonText()
++ void setButtonText(String)
+}
+class com.example.blob_game.ui.TextDialog.Options {
+~ String title
+~ String text
+~ String buttonText
++ String getTitle()
++ Options setTitle(String)
++ String getText()
++ Options setText(String)
++ String getButtonText()
++ Options setButtonText(String)
+}
+class com.example.blob_game.ui.Button {
+}
+
+
+android.app.Dialog <|-- com.example.blob_game.ui.TextDialog
+com.example.blob_game.ui.TextDialog +.. com.example.blob_game.ui.TextDialog.Options
+com.example.blob_game.ui.AppCompatTextView <|-- com.example.blob_game.ui.Button
+@enduml

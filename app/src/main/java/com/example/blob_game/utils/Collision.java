@@ -10,6 +10,4 @@ public class Collision {
 			<
 			Math.pow(circle1.getRadius() + circle2.getRadius(), 2);
 	}
-
-
 }

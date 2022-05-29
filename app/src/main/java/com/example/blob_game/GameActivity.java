@@ -17,7 +17,7 @@ public class GameActivity extends AppCompatActivity {
 	final PermissionManager permissionManager = new PermissionManager(this);
 	final String[] PERMISSIONS = { Manifest.permission.INTERNET };
 	public Game game;
-	boolean gameActive = true;
+	// public UpgradesPanel upgrades_panel;
 
 	{
 		ContextProvider.getInstance(this);
@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity {
 
 		setContentView(R.layout.activity_game);
 
+		// upgrades_panel = findViewById(R.id.upgrades_panel);
 		game = findViewById(R.id.game);
 
 		permissionManager.setPermissions(PERMISSIONS);

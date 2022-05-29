@@ -22,6 +22,7 @@ import com.example.blob_game.game_object.Blob;
 import com.example.blob_game.game_object.Tank;
 import com.example.blob_game.game_panel.DebugText;
 import com.example.blob_game.game_panel.Joystick;
+import com.example.blob_game.game_panel.UpgradesPanel;
 import com.example.blob_game.graphics.Background;
 import com.example.blob_game.graphics.CoronaSpriteSheet;
 import com.example.blob_game.network.Socket;
@@ -101,7 +102,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 		SurfaceHolder surfaceHolder = getHolder();
 		Log.i("hi", "a" + surfaceHolder);
 		surfaceHolder.addCallback(this);
-
 
 		gameLoop = new GameLoop(this, surfaceHolder);
 

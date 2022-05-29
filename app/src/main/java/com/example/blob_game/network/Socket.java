@@ -45,7 +45,7 @@ public class Socket {
 			socketHandler = new Socket(
 				serverPublic ?
 					"https://blob-game-server.herokuapp.com/" :
-					(!Build.FINGERPRINT.contains("generic") ? "http://192.168.0.111:8000" : "http://10.0.2.2:8000")
+					(!Build.FINGERPRINT.contains("generic") ? "http://192.168.0.112:8000" : "http://10.0.2.2:8000")
 			);
 
 		return socketHandler;

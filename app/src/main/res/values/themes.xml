@@ -10,5 +10,7 @@
 		<item name="colorSecondaryVariant">@color/background</item>
 		<item name="colorOnSecondary">@color/background</item>
 		<!-- Customize your theme here. -->
+		<item name="colorOnBackground">@color/background</item>
+		<item name="colorSurface">@color/background</item>
 	</style>
 </resources>

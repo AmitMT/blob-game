@@ -1,0 +1,68 @@
+@startuml
+class com.example.blob_game.network.Client {
+~ String hostAddress
+~ InputStream inputStream
+~ OutputStream outputStream
+~ Socket socket
++ void run()
+}
+class com.example.blob_game.network.Socket {
+~ {static} boolean serverPublic
+~ {static} Socket socketHandler
+~ io.socket.client.Socket socket
+~ boolean dataSending
+~ boolean connectionActive
++ {static} Socket getInstance()
++ io.socket.client.Socket getSocket()
++ void setDataSending(boolean)
++ void startSocket()
++ void stopSocket()
+}
+class com.example.blob_game.network.Socket.TankDataSender {
++ void run()
+}
+class com.example.blob_game.network.TanksHandler {
++ {static} Tank player
+~ {static} List<Tank> enemies
+~ {static} Paint playerPaint
+~ {static} Paint playerBorderPaint
+~ {static} Paint barrelPaint
+~ {static} Paint barrelBorderPaint
++ {static} String getPlayerStatus()
++ {static} void setTanks(String[])
++ {static} List<Tank> getEnemies()
++ {static} HashMap<String,String> getPropertiesFromStatusString(String)
++ {static} ArrayList<HashMap<String,String>> getBulletsFromProperties(HashMap<String,String>)
++ {static} HashMap<String,String> getPropertiesFromBulletString(String)
+}
+class com.example.blob_game.network.Server {
+~ ServerSocket serverSocket
+~ InputStream inputStream
+~ OutputStream outputStream
+~ Socket socket
++ void run()
++ void write(byte[])
+}
+class com.example.blob_game.network.WiFiDirectBroadcastReceiver {
+~ WifiP2pManager manager
+~ WifiP2pManager.Channel channel
+~ MainActivity activity
+~ boolean isDiscoveringPeers
+~ List<WifiP2pDevice> wifiPeers
+~ List<WifiP2pManager.PeerListListener> peerListListeners
++ void onReceive(Context,Intent)
++ void connectToPeer(Context,WifiP2pDevice)
++ boolean isDiscoveringPeers()
++ void setDiscoveringPeers(Context,boolean)
++ List<WifiP2pDevice> getWifiPeers()
++ boolean addPeerListListener(WifiP2pManager.PeerListListener)
++ boolean removePeerListListener(WifiP2pManager.PeerListListener)
+}
+
+
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Client
+com.example.blob_game.network.Socket +.. com.example.blob_game.network.Socket.TankDataSender
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Socket.TankDataSender
+com.example.blob_game.network.Thread <|-- com.example.blob_game.network.Server
+android.content.BroadcastReceiver <|-- com.example.blob_game.network.WiFiDirectBroadcastReceiver
+@enduml

@@ -1,0 +1,119 @@
+@startuml
+abstract class com.example.blob_game.game_panel.GamePanel {
+# PointF position
++ {abstract}void draw(Canvas)
++ {abstract}void update()
++ PointF getPosition()
++ void setPosition(PointF)
++ boolean useTouch(MotionEvent,int,int)
++ Object clone()
+}
+class com.example.blob_game.game_panel.GamePanel.Options {
+}
+class com.example.blob_game.game_panel.Joystick {
+~ Point outerCircleCenter
+~ float outerCircleRadius
+~ Point innerCircleCenter
+~ float innerCircleRadius
+~ Paint outerCirclePaintFill
+~ Paint outerCirclePaintStroke
+~ Paint innerCirclePaint
+~ PointF actuator
+~ boolean visible
++ void draw(Canvas)
++ void update()
++ PointF getActuator()
++ void setActuator(PointF)
++ void resetActuator()
++ void setCenter(Point)
++ boolean isVisible()
++ void setVisible(boolean)
++ boolean useTouch(MotionEvent,int,int)
+}
+class com.example.blob_game.game_panel.HealthBar {
+~ float maxHealth
+~ float health
+~ PointF size
+~ float healthFraction
+~ float healthFractionAnimated
+~ Paint backgroundPaint
+~ Paint healthPaint
++ void draw(Canvas)
++ void update()
++ void changeHealth(float)
++ float getMaxHealth()
++ void setMaxHealth(float)
++ float getHealth()
++ void setHealth(float)
++ float getHealthFractionAnimated()
++ void setHealthFractionAnimated(float)
++ Object clone()
+}
+class com.example.blob_game.game_panel.HealthBar.Options {
+# PointF size
+# float health
+# Paint healthPaint
+# Paint backgroundPaint
++ float getHealth()
++ Options setHealth(float)
++ PointF getSize()
++ Options setSize(PointF)
++ Paint getHealthPaint()
++ Options setHealthPaint(Paint)
++ Paint getBackgroundPaint()
++ Options setBackgroundPaint(Paint)
+}
+class com.example.blob_game.game_panel.Text {
+# String text
+# Paint paint
++ void draw(Canvas)
++ void update()
++ String getText()
++ void setText(String)
++ Paint getPaint()
++ void setPaint(Paint)
++ Object clone()
+}
+class com.example.blob_game.game_panel.Text.Options {
+}
+class com.example.blob_game.game_panel.UpgradesPanel {
++ {static} String[] upgrades
+~ int upgradePoints
+~ Paint backgroundPaint
+~ UpgradeView[] upgradeViews
++ void addUpgradePoint()
++ void removeUpgradePoint()
++ void open()
++ void close()
+}
+class com.example.blob_game.game_panel.UpgradesPanel.UpgradeView {
+~ int MAX
+~ int progress
+~ LinearLayout progressLayout
+~ void updateProgressLayout(LinearLayout)
+}
+class com.example.blob_game.game_panel.DebugText {
+~ String text
+~ Paint paint
++ void draw(Canvas)
++ void update()
++ String getText()
++ void setText(String)
++ Paint getPaint()
++ void setPaint(Paint)
+}
+
+
+com.example.blob_game.game_panel.Cloneable <|.. com.example.blob_game.game_panel.GamePanel
+com.example.blob_game.game_panel.GamePanel +.. com.example.blob_game.game_panel.GamePanel.Options
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.HealthBar
+com.example.blob_game.game_panel.HealthBar +.. com.example.blob_game.game_panel.HealthBar.Options
+com.example.blob_game.game_panel.Options <|-- com.example.blob_game.game_panel.HealthBar.Options
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.Text
+com.example.blob_game.game_panel.Text +.. com.example.blob_game.game_panel.Text.Options
+com.example.blob_game.game_panel.Options <|-- com.example.blob_game.game_panel.Text.Options
+android.widget.LinearLayout <|-- com.example.blob_game.game_panel.UpgradesPanel
+com.example.blob_game.game_panel.UpgradesPanel +.. com.example.blob_game.game_panel.UpgradesPanel.UpgradeView
+com.example.blob_game.game_panel.LinearLayout <|-- com.example.blob_game.game_panel.UpgradesPanel.UpgradeView
+com.example.blob_game.game_panel.GamePanel <|-- com.example.blob_game.game_panel.DebugText
+@enduml
