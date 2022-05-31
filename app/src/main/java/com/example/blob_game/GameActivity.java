@@ -15,7 +15,7 @@ public class GameActivity extends AppCompatActivity {
 
 	public static String name;
 	final PermissionManager permissionManager = new PermissionManager(this);
-	final String[] PERMISSIONS = { Manifest.permission.INTERNET };
+	final String[] PERMISSIONS = { Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE };
 	public Game game;
 	// public UpgradesPanel upgrades_panel;
 

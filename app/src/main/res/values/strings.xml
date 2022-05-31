@@ -4,4 +4,5 @@
 	<string name="title">Blob Game</string>
 	<string name="enter_your_name">Enter your name</string>
 	<string name="start">start</string>
+	<string name="internet_error">Please check internet connection</string>
 </resources>

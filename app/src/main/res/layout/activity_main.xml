@@ -7,6 +7,7 @@
 		tools:context="com.example.blob_game.MainActivity">
 
 	<androidx.constraintlayout.widget.ConstraintLayout
+			android:id="@+id/constraintLayout"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			app:layout_constraintBottom_toBottomOf="parent"
@@ -68,5 +69,16 @@
 				app:layout_constraintTop_toTopOf="@+id/start_button" />
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
+
+	<TextView
+			android:id="@+id/connection_error"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:text=""
+			android:textColor="#f55"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
