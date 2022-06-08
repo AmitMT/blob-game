@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.blob_game.ContextProvider;
 import com.example.blob_game.Game;
 import com.example.blob_game.MainActivity;
+import com.example.blob_game.game_panel.UpgradesPanel;
 
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import io.socket.client.IO;
 
 public class Socket {
 
-	static final boolean serverPublic = true;
+	static final boolean serverPublic = false;
 
 	static Socket socketHandler;
 	io.socket.client.Socket socket;
@@ -85,10 +86,17 @@ public class Socket {
 
 			socket.on("you-got-hit", args -> {
 				float damage = Float.parseFloat((String) args[0]);
+				String enemyId = (String) args[1];
 				TanksHandler.player.getHealthBar().changeHealth(-damage);
-				if (TanksHandler.player.getHealthBar().getHealth() <= 0)
+				if (TanksHandler.player.getHealthBar().getHealth() <= 0) {
+					Socket.getInstance().getSocket().emit("killed", enemyId);
 					ContextProvider.getInstance().getContext().startActivity(new Intent(ContextProvider.getInstance().getContext(), MainActivity.class));
+				}
 				Game.cameraShake.increaseTrauma(damage / TanksHandler.player.getHealthBar().getMaxHealth() * 5);
+			});
+
+			socket.on("you-killed", args -> {
+				UpgradesPanel.upgradesPanel.addUpgradePoint();
 			});
 
 			while (connectionActive) {

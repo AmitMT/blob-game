@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.blob_game.game_panel.UpgradesPanel;
 import com.example.blob_game.network.Socket;
 
 public class GameActivity extends AppCompatActivity {
@@ -17,7 +18,7 @@ public class GameActivity extends AppCompatActivity {
 	final PermissionManager permissionManager = new PermissionManager(this);
 	final String[] PERMISSIONS = { Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE };
 	public Game game;
-	// public UpgradesPanel upgrades_panel;
+	public UpgradesPanel upgrades_panel;
 
 	{
 		ContextProvider.getInstance(this);
@@ -34,8 +35,7 @@ public class GameActivity extends AppCompatActivity {
 
 
 		setContentView(R.layout.activity_game);
-
-		// upgrades_panel = findViewById(R.id.upgrades_panel);
+		
 		game = findViewById(R.id.game);
 
 		permissionManager.setPermissions(PERMISSIONS);

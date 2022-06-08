@@ -22,7 +22,6 @@ import com.example.blob_game.game_object.Blob;
 import com.example.blob_game.game_object.Tank;
 import com.example.blob_game.game_panel.DebugText;
 import com.example.blob_game.game_panel.Joystick;
-import com.example.blob_game.game_panel.UpgradesPanel;
 import com.example.blob_game.graphics.Background;
 import com.example.blob_game.graphics.CoronaSpriteSheet;
 import com.example.blob_game.network.Socket;
@@ -92,7 +91,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
 		Random random = new Random();
 		player = new Tank(
-			new PointF(random.nextInt(10000) - 5000, random.nextInt(10000) - 5000),
+			// new PointF(random.nextInt(10000) - 5000, random.nextInt(10000) - 5000),
+			new PointF(random.nextInt(100) - 50, random.nextInt(100) - 50),
 			30,
 			playerOptions
 		);

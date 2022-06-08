@@ -2,7 +2,6 @@ package com.example.blob_game.game_panel;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,14 +16,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.blob_game.network.TanksHandler;
 import com.example.blob_game.utils.Utils;
 
 public class UpgradesPanel extends LinearLayout {
 
 	public final static String[] upgrades = { "Health", "Regeneration", "Body Damage", "Speed", "Damage", "Bullet Speed", "Reload" };
-
+	public static UpgradesPanel upgradesPanel = null;
 	int upgradePoints = 0;
-
 	UpgradeView[] upgradeViews = new UpgradeView[upgrades.length];
 
 	public UpgradesPanel(Context context, AttributeSet attributeSet) {
@@ -34,6 +33,8 @@ public class UpgradesPanel extends LinearLayout {
 	public UpgradesPanel(Context context) {
 		super(context);
 
+		upgradesPanel = this;
+
 		setOrientation(LinearLayout.VERTICAL);
 
 		for (int i = 0; i < upgrades.length; i++) {
@@ -42,7 +43,6 @@ public class UpgradesPanel extends LinearLayout {
 		}
 
 		setVisibility(View.GONE);
-		open();
 	}
 
 	public void addUpgradePoint() {
@@ -79,7 +79,9 @@ public class UpgradesPanel extends LinearLayout {
 		};
 		runnable.run();
 
-		setVisibility(View.VISIBLE);
+		handler.post(() -> {
+			setVisibility(View.VISIBLE);
+		});
 	}
 
 	public void close() {
@@ -151,6 +153,29 @@ public class UpgradesPanel extends LinearLayout {
 			plus.setOnClickListener(view -> {
 				if (parent.upgradePoints > 0) {
 					progress++;
+					switch (upgradeName) {
+						case "Health":
+							TanksHandler.player.getHealthBar().setMaxHealth(progress * 200 + 1000);
+							break;
+						case "Regeneration":
+							TanksHandler.player.setRegeneration((float) (progress) * 0.2f + 1);
+							break;
+						case "Body Damage":
+							TanksHandler.player.setBodyDamage(progress * 2 + 10);
+							break;
+						case "Speed":
+							TanksHandler.player.setSpeed(progress * 0.05f + 2);
+							break;
+						case "Damage":
+							TanksHandler.player.setDamage(progress * 20 + 50);
+							break;
+						case "Bullet Speed":
+							TanksHandler.player.setBulletSpeed(progress * 0.4f + 4);
+							break;
+						case "Reload":
+							TanksHandler.player.setReloadMilli(progress * 40 + 400);
+							break;
+					}
 					updateProgressLayout(progressLayout);
 					parent.removeUpgradePoint();
 				} else

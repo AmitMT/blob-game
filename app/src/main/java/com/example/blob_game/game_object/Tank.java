@@ -43,6 +43,9 @@ public class Tank extends Blob {
 	int recoiledBarrelLength;
 
 	float bodyDamage = 10;
+	float regeneration = 1;
+	float speed = 1;
+	float damage = 50;
 
 	Text name;
 
@@ -127,6 +130,8 @@ public class Tank extends Blob {
 	@Override
 	public void update() {
 		if (!active) return;
+		acceleration.x = acceleration.x * speed;
+		acceleration.y = acceleration.y * speed;
 		super.update();
 
 		List<Bullet> needDeletion = new ArrayList<>();
@@ -139,6 +144,8 @@ public class Tank extends Blob {
 		name.setPosition(new PointF(position.x, position.y - radius * 1.6f));
 		healthBar.setPosition(new PointF(position.x, position.y - radius * 1.6f + 7));
 
+		healthBar.changeHealth(regeneration);
+
 		healthBar.update();
 
 		animateRecoil();
@@ -148,8 +155,9 @@ public class Tank extends Blob {
 			for (Tank enemy : enemies)
 				if (Collision.circleCircle(this, enemy)) {
 					getHealthBar().changeHealth(-enemy.getBodyDamage());
-					if (getHealthBar().getHealth() <= 0)
+					if (getHealthBar().getHealth() <= 0) {
 						ContextProvider.getInstance().getContext().startActivity(new Intent(ContextProvider.getInstance().getContext(), MainActivity.class));
+					}
 					Game.cameraShake.increaseTrauma(enemy.getBodyDamage() / TanksHandler.player.getHealthBar().getMaxHealth() * 5);
 				}
 		}
@@ -195,6 +203,46 @@ public class Tank extends Blob {
 		this.bodyDamage = bodyDamage;
 	}
 
+	public float getRegeneration() {
+		return regeneration;
+	}
+
+	public void setRegeneration(float regeneration) {
+		this.regeneration = regeneration;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
+	public float getDamage() {
+		return damage;
+	}
+
+	public void setDamage(float damage) {
+		this.damage = damage;
+	}
+
+	public float getBulletSpeed() {
+		return bulletSpeed;
+	}
+
+	public void setBulletSpeed(float bulletSpeed) {
+		this.bulletSpeed = bulletSpeed;
+	}
+
+	public int getReloadMilli() {
+		return reloadMilli;
+	}
+
+	public void setReloadMilli(int reloadMilli) {
+		this.reloadMilli = reloadMilli;
+	}
+
 	public void lerpToAngle(float angle, float speed) {
 		if (angle - barrel.angle > 180)
 			barrel.angle = Utils.lerp(barrel.angle + 360, angle, speed) % 360;
@@ -217,6 +265,7 @@ public class Tank extends Blob {
 			Paint bulletBorderPaint = new Paint(borderPaint);
 			bulletBorderPaint.setStrokeWidth(3);
 			Bullet.Options bulletOptions = (Bullet.Options) new Bullet.Options()
+				.setDamage(damage)
 				.setPaint(new Paint(paint))
 				.setBorderPaint(bulletBorderPaint)
 				.setVelocity(new PointF(velocity.x / 2 + positionAndVelocity[2], velocity.y / 2 + positionAndVelocity[3]));

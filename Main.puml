@@ -53,7 +53,6 @@ class com.example.blob_game.GameActivity {
 ~ PermissionManager permissionManager
 ~ String[] PERMISSIONS
 + Game game
-+ UpgradesPanel upgrades_panel
 # void onCreate(Bundle)
 + void onRequestPermissionsResult(int,String[],int[])
 # void onStart()
@@ -89,6 +88,7 @@ class com.example.blob_game.Game {
 }
 class com.example.blob_game.MainActivity {
 # void onCreate(Bundle)
+~ boolean isConnectedToNetwork()
 }
 
 

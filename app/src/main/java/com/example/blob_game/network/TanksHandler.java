@@ -51,7 +51,8 @@ public class TanksHandler {
 				.append(" & y= ").append(bullet.getPosition().y)
 				.append(" & radius= ").append(bullet.getRadius())
 				.append(" & velocityX= ").append(bullet.getVelocity().x)
-				.append(" & velocityY= ").append(bullet.getVelocity().y);
+				.append(" & velocityY= ").append(bullet.getVelocity().y)
+				.append(" & damage= ").append(bullet.getDamage());
 		}
 
 		return "id: " + player.getId() +
@@ -137,6 +138,7 @@ public class TanksHandler {
 									Float.parseFloat(Objects.requireNonNull(bulletProperties.get("velocityY")))
 								)
 							);
+							bullet.setDamage(Float.parseFloat(Objects.requireNonNull(bulletProperties.get("damage"))));
 							bullets.add(bullet);
 						}
 						enemy.setBullets(bullets);

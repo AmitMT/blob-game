@@ -89,7 +89,8 @@ public class Bullet extends CircleObject {
 			" timeToLive=" + timeToLive +
 			" disintegrationSpeed=" + disintegrationSpeed +
 			" timeSinceCreation=" + timeSinceCreation +
-			" dying=" + dying;
+			" dying=" + dying +
+			" damage=" + damage;
 
 	}
 
